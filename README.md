@@ -13,6 +13,8 @@ delete data.
 
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/jojomensah89/datamonster-selfhost)
 
+![Dashboard](docs/dashboard.png)
+
 > Inspired by [Minilytics](https://github.com/surendrapandar/minilytics). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## What it does

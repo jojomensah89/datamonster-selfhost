@@ -1,7 +1,7 @@
 // End-to-end check of hosted mode against `wrangler dev`, with dummy Google and Polar values:
 //   npx wrangler dev --port 8788 --var HOSTED_MODE:true --var GOOGLE_CLIENT_ID:test --var GOOGLE_CLIENT_SECRET:test \
 //     --var ADMIN_EMAILS:owner@example.com --var SESSION_SECRET:any-long-random-string --var POLAR_ENVIRONMENT:sandbox \
-//     --var POLAR_ACCESS_TOKEN:not-a-real-token --var POLAR_PRODUCT_ID:prod_test --var POLAR_WEBHOOK_SECRET:whsec_dGVzdC1iaWxsaW5nLXNlY3JldA==
+//     --var POLAR_ACCESS_TOKEN:not-a-real-token --var POLAR_PRODUCT_ID:prod_test --var POLAR_WEBHOOK_SECRET:test-billing-secret
 // Accounts and sessions are made directly in the local database. Nothing is bought, and Polar is asked once with the dummy token.
 // Extra `wrangler d1` flags (such as --persist-to) go in D1_FLAGS.
 import { execSync } from 'node:child_process';
@@ -9,7 +9,7 @@ import crypto from 'node:crypto';
 
 const BASE = process.env.BASE ?? 'http://127.0.0.1:8788';
 const SESSION_SECRET = process.env.SESSION_SECRET ?? 'any-long-random-string';
-const KEY = Buffer.from('dGVzdC1iaWxsaW5nLXNlY3JldA==', 'base64');
+const KEY = Buffer.from('test-billing-secret');
 const PRODUCT = 'prod_test';
 const assert = (cond, msg) => {
   if (!cond) throw new Error('FAIL: ' + msg);
