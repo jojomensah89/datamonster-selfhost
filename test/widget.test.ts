@@ -1,0 +1,19 @@
+import { describe, it, expect } from 'vitest';
+import app from '../src/worker/index';
+import { makeD1 } from './helpers/d1';
+import { createToken } from '../src/agent/tokens';
+import { createSession } from '../src/worker/auth';
+import { openapi } from '../src/agent/openapi';
+function setup() {
+ const db=makeD1(); const now=Date.now();
+ db.raw.prepare("INSERT INTO sites(id,name,domain,timezone,currency,api_key,created_at) VALUES ('widget','Widget','example.test','UTC','USD','key',?)").run(now);
+ for(let i=0;i<123;i++) db.raw.prepare("INSERT INTO sessions(site_id,id,visitor_id,started_at,last_seen_at,source,channel) VALUES ('widget',?,?,?,?,'Direct','Direct')").run('s'+i,'v'+i,now-1000,now);
+ return {db,env:{DB:db.d1,SESSION_SECRET:'secret',ADMIN_PASSWORD:'pw'} as never};
+}
+describe('public online widget',()=>{
+ it('off and missing are empty 404 with CORS; GET only',async()=>{const {env}=setup();for(const id of ['widget','missing']){const r=await app.request('/api/public/online/'+id,{},env);expect(r.status).toBe(404);expect(await r.text()).toBe('');expect(r.headers.get('access-control-allow-origin')).toBe('*')}expect((await app.request('/api/public/online/widget',{method:'POST'},env)).status).toBe(405)});
+ it('suppresses independently, rounds and caches only aggregates',async()=>{const {db,env}=setup();db.raw.exec('UPDATE sites SET widget_enabled=1,widget_visitors=1');let r=await app.request('/api/public/online/widget',{},env);expect(await r.json()).toEqual({online:120,visitors:120});expect(r.headers.get('cache-control')).toBe('public, max-age=20, s-maxage=20');db.raw.exec('UPDATE sites SET widget_threshold=200');r=await app.request('/api/public/online/widget',{},env);expect(await r.json()).toEqual({online:null,visitors:null});db.raw.exec('UPDATE sites SET widget_threshold=3,widget_rounding=0,widget_visitors=0');expect(await (await app.request('/api/public/online/widget',{},env)).json()).toEqual({online:123,visitors:null})});
+ it('rate limits requests',async()=>{const {env,db}=setup();db.raw.exec('UPDATE sites SET widget_enabled=1');let r:Response;for(let i=0;i<121;i++)r=await app.request('/api/public/online/widget',{headers:{'cf-connecting-ip':'198.51.100.1'}},env);expect(r!.status).toBe(429)});
+ it('requires owner login and validates settings',async()=>{const {env}=setup();expect((await app.request('/api/sites/widget/widget',{},env)).status).toBe(401);const cookie='dm_auth='+await createSession(env,'admin');const headers={cookie,'content-type':'application/json'};expect((await app.request('/api/sites/widget/widget',{headers},env)).status).toBe(200);expect((await app.request('/api/sites/widget/widget',{method:'PUT',headers,body:JSON.stringify({threshold:1})},env)).status).toBe(400);const r=await app.request('/api/sites/widget/widget',{method:'PUT',headers,body:JSON.stringify({enabled:true,visitors:true,theme:'dark',powered:false})},env);expect(r.status).toBe(200);expect(await r.json()).toMatchObject({enabled:true,visitors:true,theme:'dark',powered:false})});
+ it('write tools are scoped, return snippets and audit changes',async()=>{const {db,env}=setup();const {secret}=await createToken(db.d1,'admin',{name:'Widget',scopes:['read','write']});const headers={authorization:'Bearer '+secret,'content-type':'application/json'};const body=JSON.stringify({site_id:'widget',origin:'https://analytics.example',visitors:true});const r=await app.request('/api/agent/v1/enable_online_widget',{method:'POST',headers,body},env);expect(r.status).toBe(200);expect(await r.json()).toMatchObject({enabled:true,visitors:true,snippet:expect.stringContaining('datamonster-online')});expect(db.raw.prepare("SELECT ok FROM agent_audit WHERE tool='enable_online_widget'").get()).toMatchObject({ok:1});expect((await app.request('/api/agent/v1/get_online_widget',{method:'POST',headers,body},env)).status).toBe(200);expect(openapi('https://example.test').paths).toHaveProperty('/api/agent/v1/enable_online_widget')});
+});

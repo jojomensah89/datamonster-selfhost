@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://datamonster-directories.pages.dev/schema.json",
+  "title": "DataMonster launch directories",
+  "description": "A list of places to launch a product. Data licensed CC BY 4.0.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["slug", "name", "url", "submit_url", "category", "pricing", "price_note", "audience", "how_it_works", "tips", "referrer_domains", "last_checked", "check_source", "status"],
+    "properties": {
+      "slug": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "maxLength": 60, "description": "Unique; used in the page URL /directories/<slug>/." },
+      "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+      "url": { "type": "string", "format": "uri", "pattern": "^https://" },
+      "submit_url": { "type": ["string", "null"], "format": "uri", "pattern": "^https://" },
+      "category": { "enum": ["general", "dev-tools", "ai", "saas", "design", "indie", "regional"] },
+      "pricing": { "enum": ["free", "paid", "freemium", null], "description": "null when we could not confirm it." },
+      "price_note": { "type": ["string", "null"], "maxLength": 300 },
+      "audience": { "type": "string", "minLength": 1, "maxLength": 200 },
+      "how_it_works": { "type": "string", "minLength": 1, "maxLength": 600, "description": "Two or three plain sentences, in our own words." },
+      "tips": { "type": "array", "items": { "type": "string", "minLength": 1, "maxLength": 200 }, "maxItems": 8 },
+      "referrer_domains": {
+        "type": "array",
+        "minItems": 1,
+        "items": { "type": "string", "pattern": "^[a-z0-9-]+(\\.[a-z0-9-]+)*\\.[a-z]{2,}$" },
+        "description": "Bare hostnames (no www, no scheme) that visitors from this directory arrive from; matches DataMonster's Launches match_domain rule."
+      },
+      "last_checked": { "type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+      "check_source": { "type": ["string", "null"], "format": "uri", "pattern": "^https://" },
+      "status": { "enum": ["verified", "unverified"], "description": "verified only when someone fetched the directory's own site on last_checked and saw it live and accepting submissions." }
+    }
+  }
+}

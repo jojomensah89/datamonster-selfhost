@@ -1,0 +1,14 @@
+node_modules
+dist
+.wrangler
+.dev.vars
+*.log
+
+# design explorations kept locally, not in the repo
+.taste-skill/
+design/mascot/
+design/mascot-v2/
+design/mascot-v3/
+
+# General Sans may be self-hosted but not redistributed (ITF Free Font License): scripts/fetch-fonts.mjs downloads it.
+public/fonts/GeneralSans-*

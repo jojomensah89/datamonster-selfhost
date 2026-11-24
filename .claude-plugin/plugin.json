@@ -1,0 +1,14 @@
+{
+  "name": "datamonster",
+  "displayName": "DataMonster",
+  "version": "0.1.0",
+  "description": "Agent-first revenue analytics on your own Cloudflare account: skills to install, instrument and query DataMonster, plus its MCP server.",
+  "author": {
+    "name": "jojomensah89",
+    "url": "https://github.com/jojomensah89"
+  },
+  "homepage": "https://github.com/jojomensah89/datamonster-selfhost",
+  "repository": "https://github.com/jojomensah89/datamonster-selfhost",
+  "license": "MIT",
+  "keywords": ["analytics", "revenue", "attribution", "cloudflare", "mcp"]
+}

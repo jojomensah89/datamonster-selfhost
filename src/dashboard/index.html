@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DataMonster: know which post paid you</title>
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="description" content="Revenue analytics that answers your AI agent in plain words: which post, launch or directory paid you." />
+    <link rel="canonical" href="https://datamonster.dev/" />
+    <meta name="theme-color" content="#efede8" />
+    <script>
+      // Theme before first paint (lib/theme.ts keeps it in step afterwards): the stored choice, else the system's.
+      // The marketing landing page at "/" (signed out) is always light, so "/" turns dark only for a signed-in app.
+      (function () {
+        var d = document.documentElement, t = 'light';
+        try {
+          var p = localStorage.getItem('dm_theme');
+          var landing = location.pathname === '/' && !localStorage.getItem('dm_app');
+          var directories = /^\/directories(\/|$)/.test(location.pathname);
+          if (!landing && !directories) t = p === 'dark' || p === 'light' ? p : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        } catch (e) {}
+        d.setAttribute('data-theme', t);
+        d.style.colorScheme = t;
+        if (t === 'dark') document.querySelector('meta[name="theme-color"]').setAttribute('content', '#131312');
+      })();
+    </script>
+
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DataMonster" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://datamonster.dev/" />
+    <meta property="og:title" content="DataMonster: know which post paid you" />
+    <meta property="og:description" content="Revenue analytics that answers your AI agent in plain words: which post, launch or directory paid you." />
+    <meta property="og:image" content="https://datamonster.dev/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="DataMonster dashboard showing visitors and revenue by traffic source" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="DataMonster: know which post paid you" />
+    <meta name="twitter:description" content="Revenue analytics that answers your AI agent in plain words: which post, launch or directory paid you." />
+    <meta name="twitter:image" content="https://datamonster.dev/og-image.png" />
+    <meta name="twitter:image:alt" content="DataMonster dashboard showing visitors and revenue by traffic source" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "DataMonster",
+        "url": "https://datamonster.dev/",
+        "description": "Revenue analytics that answers your AI agent in plain words: which post, launch or directory paid you.",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "image": "https://datamonster.dev/og-image.png"
+      }
+    </script>
+    <script>
+      // datamonster.dev tracks itself with DataMonster. Only on that domain, so self-hosted dashboards load nothing extra.
+      if (/(^|\.)datamonster\.dev$/.test(location.hostname)) {
+        // Queue calls (identify, goal) made before the script has loaded; the tracker replays them.
+        window.datamonster = window.datamonster || function () { (window.datamonster.q = window.datamonster.q || []).push(arguments); };
+        var s = document.createElement('script');
+        s.defer = true;
+        s.setAttribute('data-website-id', '2r2m2d29014o6243');
+        s.src = 'https://datamonster.dev/js/script.js';
+        document.head.appendChild(s);
+      }
+    </script>
+  </head>
+  <body>
+    <!-- Shown to crawlers and before JS runs; React replaces it on first render. -->
+    <div id="root">
+      <main style="max-width: 42rem; margin: 4rem auto; padding: 0 1rem; text-align: center; font-family: system-ui, sans-serif">
+        <h1>Know which post paid you</h1>
+        <p>Revenue analytics that answers your AI agent in plain words: which post, launch or directory paid you.</p>
+      </main>
+    </div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

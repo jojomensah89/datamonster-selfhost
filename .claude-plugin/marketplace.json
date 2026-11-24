@@ -1,0 +1,19 @@
+{
+  "name": "datamonster",
+  "description": "DataMonster agent skills and MCP server: self-hosted revenue analytics your AI agent can install and query.",
+  "owner": {
+    "name": "jojomensah89",
+    "url": "https://github.com/jojomensah89"
+  },
+  "plugins": [
+    {
+      "name": "datamonster",
+      "source": "./",
+      "description": "Skills to install DataMonster, keep tracking current while coding, and answer revenue questions, plus the DataMonster MCP server.",
+      "version": "0.1.0",
+      "homepage": "https://github.com/jojomensah89/datamonster-selfhost",
+      "license": "MIT",
+      "keywords": ["analytics", "revenue", "attribution", "cloudflare", "mcp"]
+    }
+  ]
+}

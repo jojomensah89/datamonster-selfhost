@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "datamonster": {
+      "type": "http",
+      "url": "${DATAMONSTER_URL}/api/agent/mcp",
+      "headers": {
+        "Authorization": "Bearer ${DATAMONSTER_TOKEN}"
+      }
+    }
+  }
+}

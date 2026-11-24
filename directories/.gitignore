@@ -1,0 +1,5 @@
+dist/
+.taste-skill/
+
+# General Sans is fetched at build time (licence forbids redistribution)
+site/fonts/

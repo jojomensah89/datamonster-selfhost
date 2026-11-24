@@ -1,0 +1,27 @@
+{
+  "name": "datamonster",
+  "version": "0.1.0",
+  "description": "Agent-first revenue analytics on your own Cloudflare account: skills to install, instrument and query DataMonster.",
+  "author": {
+    "name": "jojomensah89",
+    "url": "https://github.com/jojomensah89"
+  },
+  "homepage": "https://github.com/jojomensah89/datamonster-selfhost",
+  "repository": "https://github.com/jojomensah89/datamonster-selfhost",
+  "license": "MIT",
+  "keywords": ["analytics", "revenue", "attribution", "cloudflare", "mcp"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "DataMonster",
+    "shortDescription": "Install, instrument and query self-hosted revenue analytics",
+    "longDescription": "Skills that install DataMonster on your Cloudflare account, keep goal and attribution tracking current while you code, and answer which source made money. Connect the DataMonster MCP server separately (see docs/agents.md).",
+    "developerName": "jojomensah89",
+    "category": "Productivity",
+    "capabilities": ["Read"],
+    "websiteURL": "https://github.com/jojomensah89/datamonster-selfhost",
+    "defaultPrompt": [
+      "Use DataMonster to set up revenue analytics on my site.",
+      "Use DataMonster to tell me which source made money in the last 30 days."
+    ]
+  }
+}
