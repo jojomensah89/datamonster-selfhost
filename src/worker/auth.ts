@@ -132,7 +132,8 @@ export const planActive = (until: number | null | undefined, now = Date.now()) =
  * may already be past Free's, and would otherwise stop being counted the moment they cancel.
  */
 export const recordingPlan = (until: number | null | undefined, now = Date.now()): PlanName =>
-  planActive(until, now) || (until && utcMonth(until) === utcMonth(now)) ? 'pro' : 'free';
+  // `until` is the first moment without Pro: ending as December starts leaves November's limits, not December's.
+  planActive(until, now) || (until && utcMonth(until - 1) === utcMonth(now)) ? 'pro' : 'free';
 
 /** The limits a site records under, 'none' when it has none, or null when Free has paused it. */
 export async function recordingLimits(env: Env, site: SiteWithOwner, now = Date.now()): Promise<ReturnType<typeof planLimits> | 'none' | null> {
@@ -172,16 +173,24 @@ export function bumpUsage(db: D1Database, ownerId: string, siteId: string, now: 
 /**
  * May this site record one more payment? Payments don't count toward the event limit (losing one would be worse than
  * losing a visit), but they have the same size of allowance of their own, so a free account can't write without end.
+ * Ids are the stored ones. A retry of something stored is free. A refund of a stored payment has an allowance of its own
+ * and is taken on a paused website too: its money was counted there, so it has to be able to come off.
  */
-export async function takePayment(env: Env, site: SiteWithOwner, now = Date.now()): Promise<boolean> {
+export async function takePayment(env: Env, site: SiteWithOwner, p: { id: string; refundOf?: string }, now = Date.now()): Promise<boolean> {
   const limits = await recordingLimits(env, site, now);
   if (limits === 'none') return true;
-  if (!limits) return false;
-  const key = `${utcMonth(now)}/payments`;
-  const row = await env.DB.prepare('SELECT events FROM usage_monthly WHERE owner_id = ? AND month = ?').bind(site.owner_id, key).first<{ events: number }>();
-  if ((row?.events ?? 0) >= limits.hardEventLimit) return false;
-  await env.DB.prepare('INSERT INTO usage_monthly (owner_id, month, events) VALUES (?, ?, 1) ON CONFLICT(owner_id, month) DO UPDATE SET events = events + 1').bind(site.owner_id, key).run();
-  return true;
+  const rows = await env.DB.prepare('SELECT id FROM payments WHERE site_id = ? AND id IN (?, ?)')
+    .bind(site.id, p.id, p.refundOf ?? p.id)
+    .all<{ id: string }>();
+  const stored = rows.results.map((r) => r.id);
+  if (stored.includes(p.id)) return true;
+  const refund = !!p.refundOf && stored.includes(p.refundOf);
+  if (!limits && !refund) return false;
+  const limit = (limits ?? planLimits(env, 'free')).hardEventLimit;
+  const taken = await env.DB.prepare('INSERT INTO usage_monthly (owner_id, month, events) VALUES (?, ?, 1) ON CONFLICT(owner_id, month) DO UPDATE SET events = events + 1 WHERE events < ?')
+    .bind(site.owner_id, `${utcMonth(now)}/${refund ? 'refunds' : 'payments'}`, limit)
+    .run();
+  return taken.meta.changes > 0;
 }
 
 /** Password sessions are signed with the password too, so changing it ends them. */

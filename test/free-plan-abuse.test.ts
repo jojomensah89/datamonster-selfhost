@@ -1,7 +1,8 @@
 import { createHmac } from 'node:crypto';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { checkAllowed } from '../src/agent/placements';
 import { createToken } from '../src/agent/tokens';
-import { createSession, recordingLimits } from '../src/worker/auth';
+import { createSession, recordingLimits, recordingPlan } from '../src/worker/auth';
 import { cacheSizes, forgetAllSites, getSite, type Env } from '../src/worker/env';
 import app from '../src/worker/index';
 import { makeD1 } from './helpers/d1';
@@ -150,5 +151,55 @@ describe('a hostile Free account', () => {
     const t = setup();
     expect(JSON.stringify(await (await t.as('free', '/api/sites/sitefree1/providers')).json())).not.toMatch(/whsec|owner_/);
     expect((await t.as('free', '/api/sites/siteothr1/providers')).status).toBe(404);
+  });
+});
+
+describe('what the second review found', () => {
+  const pay = async (t: ReturnType<typeof setup>, o: Record<string, unknown>) =>
+    (await t.call('/api/v1/payments', { method: 'POST', headers: { authorization: 'Bearer kf' }, body: JSON.stringify({ amount: 5, ...o }) })).status;
+  const charge = { id: 'cs', payment_status: 'paid', payment_intent: 'pi', amount_total: 500, currency: 'usd', created: 1 };
+
+  it('a retry uses no allowance, and the allowance holds when payments arrive together', async () => {
+    const t = setup({ FREE_EVENT_LIMIT: '2' });
+    expect([await pay(t, { transaction_id: 'a' }), await pay(t, { transaction_id: 'a' }), await pay(t, { transaction_id: 'b' }), await pay(t, { transaction_id: 'c' }), await pay(t, { transaction_id: 'a' })]).toEqual([200, 200, 200, 402, 200]);
+    const u = setup({ FREE_EVENT_LIMIT: '2' });
+    const all = await Promise.all(Array.from({ length: 20 }, (_, i) => pay(u, { transaction_id: 't' + i })));
+    expect([all.filter((s) => s === 200).length, u.n('payments')]).toEqual([2, 2]);
+  });
+  it('a refund of a recorded payment is taken when the allowance is used up', async () => {
+    const t = setup({ FREE_EVENT_LIMIT: '2' });
+    await t.stripe({ type: 'checkout.session.completed', data: { object: charge } });
+    expect([await pay(t, { transaction_id: 'a' }), await pay(t, { transaction_id: 'b' })]).toEqual([200, 402]);
+    for (const amount_refunded of [200, 500]) await t.stripe({ type: 'charge.refunded', data: { object: { id: 'ch', payment_intent: 'pi', amount_refunded, currency: 'usd' } } });
+    expect(t.db.raw.prepare("SELECT amount FROM payments WHERE kind = 'refund'").all()).toEqual([{ amount: -500 }]);
+    expect([await pay(t, { transaction_id: 'a', refunded: true }), await pay(t, { transaction_id: 'never', refunded: true })]).toEqual([200, 402]);
+    // Refunds have an end too.
+    await t.stripe({ type: 'charge.refunded', data: { object: { id: 'ch2', payment_intent: 'pi', amount_refunded: 1, currency: 'usd' } } });
+    expect(t.n("payments WHERE kind = 'refund'")).toBe(2);
+  });
+  it('a refund is taken on a paused website, a new payment is not', async () => {
+    const t = setup();
+    await t.stripe({ type: 'checkout.session.completed', data: { object: charge } });
+    t.db.raw.exec(`INSERT INTO sites (id,name,domain,timezone,currency,api_key,created_at,owner_id) VALUES ('sitefree2','G','g.example.com','UTC','USD','kg',2,'${t.me}'); UPDATE users SET free_site_id = 'sitefree2' WHERE id = '${t.me}'`);
+    forgetAllSites();
+    await t.stripe({ type: 'checkout.session.completed', data: { object: { ...charge, id: 'cs2', payment_intent: 'pi2' } } });
+    await t.stripe({ type: 'charge.refunded', data: { object: { id: 'ch', payment_intent: 'pi', amount_refunded: 500, currency: 'usd' } } });
+    expect(t.db.raw.prepare('SELECT kind FROM payments ORDER BY kind').all()).toEqual([{ kind: 'payment' }, { kind: 'refund' }]);
+  });
+  it("a Dodo payment waiting for its product uses the allowance once, and its refund isn't lost", async () => {
+    const t = setup({ FREE_EVENT_LIMIT: '2' });
+    const paid = { type: 'payment.succeeded', data: { payment_id: 'p', total_amount: 500, currency: 'USD', customer: {}, product_cart: [{ product_id: 'pdt' }] } };
+    for (let i = 0; i < 3; i++) await t.dodo(paid);
+    expect(await pay(t, { transaction_id: 'a' })).toBe(200);
+    await t.dodo({ type: 'refund.succeeded', data: { payment_id: 'p', refund_id: 'r', amount: 500, currency: 'USD' } });
+    expect(t.n("payments WHERE kind = 'refund' AND provider = 'dodo'")).toBe(1);
+  });
+  it("Pro that ends as a month starts doesn't keep its limits for that month", () => {
+    const end = Date.UTC(2026, 11, 1);
+    expect([recordingPlan(end, end - 1), recordingPlan(end, end), recordingPlan(end, Date.UTC(2026, 11, 20)), recordingPlan(end + 1, Date.UTC(2026, 11, 20))]).toEqual(['pro', 'free', 'free', 'pro']);
+  });
+  it('a self-hosted website has no account limit on listing checks', () => {
+    for (let i = 0; i < 50; i++) checkAllowed({ id: 'self', owner_id: null } as never);
+    expect(() => { for (let i = 0; i < 50; i++) checkAllowed({ id: 'x', owner_id: 'acc-' + run } as never); }).toThrow();
   });
 });

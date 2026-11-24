@@ -2,6 +2,7 @@ node_modules
 dist
 .wrangler
 .dev.vars
+wrangler.deploy.jsonc
 *.log
 
 # design explorations kept locally, not in the repo

@@ -20,12 +20,14 @@ export async function polar(c: Context<AppEnv>) {
   const refund = event.type === 'order.refunded';
   if (!refund && event.type !== 'order.paid') return c.json({ ok: true });
   if (!text(d.id)) return c.json({ ok: true });
-  if (!(await takePayment(c.env, site))) return c.json({ ok: true, ignored: 'this website is not recording on its plan' });
+  const paymentId = `${site.id}:polar:${d.id}`.slice(0, 190);
+  const id = refund ? `${paymentId}:refund` : paymentId;
+  if (!(await takePayment(c.env, site, { id, refundOf: refund ? paymentId : undefined }))) return c.json({ ok: true, ignored: 'this website is not recording on its plan' });
   const customer = d.customer ?? {};
   const meta = { ...customer.metadata, ...d.customer_metadata, ...d.metadata };
   const reference = text(meta.reference_id);
   await save(c, site, {
-    id: `${site.id}:polar:${d.id}${refund ? ':refund' : ''}`, provider: 'polar',
+    id, provider: 'polar',
     ts: Date.parse((refund ? d.modified_at : d.created_at) ?? event.timestamp) || Date.now(),
     amount: refund ? -Math.abs(d.refunded_amount + (d.refunded_tax_amount ?? 0)) : d.total_amount,
     kind: refund ? 'refund' : 'payment', currency: text(d.currency) ?? site.currency,

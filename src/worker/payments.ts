@@ -332,6 +332,9 @@ export async function learnDodoProducts(db: D1Database, site: Site, products: st
   for (const row of pending.results) await recordPayment(db, site, JSON.parse(row.payload) as PaymentInput);
 }
 
+/** Answered as received, so the provider doesn't keep retrying. */
+const NOT_RECORDING = { ok: true, ignored: 'this website is not recording on its plan' };
+
 /** Dodo Payments webhook: POST /api/webhooks/dodo/:siteId */
 export async function handleDodoWebhook(c: Context<AppEnv>) {
   const site = await getSite(c.env.DB, c.req.param('siteId')!);
@@ -352,8 +355,6 @@ export async function handleDodoWebhook(c: Context<AppEnv>) {
 
   const event = JSON.parse(body) as { type: string; timestamp?: string; data: Record<string, any> };
   if (event.type !== 'payment.succeeded' && event.type !== 'refund.succeeded') return c.json({ ok: true, ignored: 'event not used' });
-  // Answered as received, so the provider doesn't keep retrying.
-  if (!(await takePayment(c.env, site))) return c.json({ ok: true, ignored: 'this website is not recording on its plan' });
   const data = event.data ?? {};
   const customer = (data.customer ?? {}) as Record<string, unknown>;
   const meta = { ...(customer.metadata as object), ...(data.metadata as object) } as Record<string, unknown>;
@@ -385,6 +386,8 @@ export async function handleDodoWebhook(c: Context<AppEnv>) {
     });
     const { owned, learn } = await ownsDodoPayment(c.env.DB, site, products, payment.visitorId ?? null);
     if (owned === false) return c.json({ ok: true, ignored: 'another site\'s product' });
+    const waiting = await c.env.DB.prepare('SELECT 1 FROM pending_payments WHERE site_id = ? AND payment_id = ?').bind(site.id, payment.id).first();
+    if (!waiting && !(await takePayment(c.env, site, { id: `${site.id}:${payment.id}` }))) return c.json(NOT_RECORDING);
     if (owned === null) {
       await c.env.DB.prepare('INSERT OR IGNORE INTO pending_payments (site_id, payment_id, product_id, ts, payload) VALUES (?, ?, ?, ?, ?)')
         .bind(site.id, payment.id, payment.productId, ts, JSON.stringify(payment))
@@ -396,19 +399,21 @@ export async function handleDodoWebhook(c: Context<AppEnv>) {
   } else if (event.type === 'refund.succeeded') {
     const original = await c.env.DB.prepare('SELECT * FROM payments WHERE id = ? AND site_id = ?')
       .bind(`${site.id}:${data.payment_id}`, site.id)
-      .first<{ visitor_id: string | null; session_id: string | null; currency: string; amount: number }>();
+      .first<{ id: string; visitor_id: string | null; session_id: string | null; currency: string; amount: number }>();
     // A refund of a payment this site never recorded (another product, or before tracking) isn't this site's.
     if (!original) {
       await c.env.DB.prepare('DELETE FROM pending_payments WHERE site_id = ? AND payment_id = ?').bind(site.id, String(data.payment_id)).run();
       return c.json({ ok: true, ignored: 'unknown payment' });
     }
+    const refundId = `${site.id}:${data.refund_id ?? `refund_${data.payment_id}`}`.slice(0, 250);
+    if (!(await takePayment(c.env, site, { id: refundId, refundOf: original.id }))) return c.json(NOT_RECORDING);
     const amount = Number(data.amount) || original.amount || 0;
     await c.env.DB.prepare(
       `INSERT OR IGNORE INTO payments (id, site_id, provider, ts, amount, kind, currency, visitor_id, session_id, customer_id, email, name)
        VALUES (?, ?, 'dodo', ?, ?, 'refund', ?, ?, ?, ?, ?, ?)`,
     )
       .bind(
-        `${site.id}:${data.refund_id ?? `refund_${data.payment_id}`}`.slice(0, 250),
+        refundId,
         site.id,
         ts,
         -Math.abs(amount),
@@ -471,7 +476,6 @@ export async function handleStripeWebhook(c: Context<AppEnv>) {
 
   const event = JSON.parse(body) as { type: string; data: { object: Record<string, any> } };
   if (!STRIPE_EVENTS.has(event.type)) return c.json({ ok: true, ignored: 'event not used' });
-  if (!(await takePayment(c.env, site))) return c.json({ ok: true, ignored: 'this website is not recording on its plan' });
   const o = event.data?.object ?? {};
   const ts = (Number(o.created) || Date.now() / 1000) * 1000;
   // Older API versions put these on the object, newer ones under `parent`.
@@ -488,9 +492,11 @@ export async function handleStripeWebhook(c: Context<AppEnv>) {
       customerId: str(o.customer),
     });
     if (elsewhere) return c.json({ ok: true, ignored: 'not this site\'s payment' });
+    // A subscription's first invoice also arrives as invoice.paid; the same id makes them one payment.
+    const id = ((o.mode === 'subscription' ? str(o.invoice) : str(o.payment_intent)) ?? String(o.id)).slice(0, 200);
+    if (!(await takePayment(c.env, site, { id: `${site.id}:${id}` }))) return c.json(NOT_RECORDING);
     await recordPayment(c.env.DB, site, {
-      // A subscription's first invoice also arrives as invoice.paid; the same id makes them one payment.
-      id: (o.mode === 'subscription' ? str(o.invoice) : str(o.payment_intent)) ?? String(o.id),
+      id,
       provider: 'stripe',
       ts,
       amount: Number(o.amount_total) || 0,
@@ -513,8 +519,10 @@ export async function handleStripeWebhook(c: Context<AppEnv>) {
     if (await stripePaymentIsElsewhere(c.env.DB, site, { taggedSite: pickMeta(meta, ['dm_site_id']), customerId: str(o.customer) })) {
       return c.json({ ok: true, ignored: 'not this site\'s payment' });
     }
+    const id = String(o.id).slice(0, 200);
+    if (!(await takePayment(c.env, site, { id: `${site.id}:${id}` }))) return c.json(NOT_RECORDING);
     await recordPayment(c.env.DB, site, {
-      id: String(o.id),
+      id,
       provider: 'stripe',
       ts,
       amount: Number(o.amount_paid),
@@ -536,6 +544,8 @@ export async function handleStripeWebhook(c: Context<AppEnv>) {
         .bind(site.id, str(o.customer) ?? '')
         .first<{ id: string; visitor_id: string | null; session_id: string | null }>());
     if (!original) return c.json({ ok: true, ignored: 'unknown payment' });
+    const refundId = `${site.id}:${String(o.id).slice(0, 200)}:refund`;
+    if (!(await takePayment(c.env, site, { id: refundId, refundOf: original.id }))) return c.json(NOT_RECORDING);
     // amount_refunded is the running total, so a second partial refund raises it. Stripe can deliver out of order: the
     // larger total is always the later one. The payment may have been matched to a visitor since, so its credit follows.
     await c.env.DB.prepare(
@@ -547,7 +557,7 @@ export async function handleStripeWebhook(c: Context<AppEnv>) {
        WHERE payments.site_id = excluded.site_id`,
     )
       .bind(
-        `${site.id}:${String(o.id).slice(0, 200)}:refund`,
+        refundId,
         site.id,
         Date.now(),
         -Math.abs(Number(o.amount_refunded) || 0),
@@ -585,12 +595,16 @@ export async function handlePaymentApi(c: Context<AppEnv>) {
     return c.json({ error: 'transaction_id (string) and amount (number, e.g. 29.99) are required' }, 400);
   }
   if ((b.transaction_id as string).length > 150) return c.json({ error: 'transaction_id is longer than 150 characters' }, 400);
-  if (!(await takePayment(c.env, site))) return c.json({ error: 'This website is not recording on its DataMonster plan. See Billing.' }, 402);
   const currency = (str(b.currency) ?? site.currency).slice(0, 10).toUpperCase();
   const minor = Math.round((b.amount as number) * 10 ** currencyDecimals(currency));
   const refunded = b.refunded === true;
+  const paymentId = `${site.id}:${b.transaction_id}`;
+  const id = refunded ? `${paymentId}:refund` : paymentId;
+  if (!(await takePayment(c.env, site, { id, refundOf: refunded ? paymentId : undefined }))) {
+    return c.json({ error: 'This website is not recording on its DataMonster plan. See Billing.' }, 402);
+  }
   const res = await recordPayment(c.env.DB, site, {
-    id: `${site.id}:${b.transaction_id}${refunded ? ':refund' : ''}`,
+    id,
     provider: 'api',
     ts: typeof b.timestamp === 'string' ? Date.parse(b.timestamp) || Date.now() : Date.now(),
     amount: refunded ? -Math.abs(minor) : minor,

@@ -515,9 +515,9 @@ export function statusAfterCheck(status: PlacementStatus, result: CheckResult): 
 
 // Each launch has its own pause (RECHECK_AFTER_MS), and a website up to 100 launches: this is the pause for all of them.
 const checksPerOwner = memoryLimiter(20, 60_000);
-/** Before a check someone asks for. The hourly job has its own pace. */
+/** Before a check someone asks for, on an account's website: a self-hosted one has no account. The hourly job has its own pace. */
 export function checkAllowed(site: Site) {
-  if (!checksPerOwner(site.owner_id ?? site.id)) throw new ToolError('Too many listing checks. Try again in a minute.', 429);
+  if (site.owner_id && !checksPerOwner(site.owner_id)) throw new ToolError('Too many listing checks. Try again in a minute.', 429);
 }
 
 /**

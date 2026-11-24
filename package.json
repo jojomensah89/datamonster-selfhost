@@ -28,6 +28,7 @@
     "build": "vite build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "ci": "npm run typecheck && npm test && npm run build",
     "db:migrate:local": "wrangler d1 migrations apply datamonster --local",
     "db:migrate": "wrangler d1 migrations apply datamonster --remote",
     "deploy": "npm run build && wrangler d1 migrations apply datamonster --remote && wrangler deploy",
