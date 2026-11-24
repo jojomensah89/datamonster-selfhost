@@ -71,7 +71,7 @@ it('retains each customer payment currency and excludes foreign money from visit
  expect((await visitors(ctx))[0]).toMatchObject({spent:100});
 });
 it('uses hosted wording consistently from the shared guide',()=>{
- expect(guideFor(true).start).toContain('DataMonster records visits and payments for your site');
+ expect(guideFor(true).start).toContain('DataMonster is revenue analytics. It records visits and payments for your websites');
  expect(guideFor(true).start).not.toContain('own Cloudflare account');
  expect(guideFor(false).start).toContain('own Cloudflare account');
 });

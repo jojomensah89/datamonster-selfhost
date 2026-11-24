@@ -87,12 +87,17 @@
   // ---- transport
   // Personal data in URLs (e.g. ?email= on a payment return page) never leaves the browser.
   var PRIVATE_PARAM = /^(e-?mail|name|phone|password|pass|token|access_token|id_token|auth|code|secret|key|api_key|license_key|license)$/i;
+  // An email address anywhere else in a URL, its @ plain or encoded.
+  var EMAIL = /[^\s\/?&=#:;,@]{1,64}(?:@|%(?:25)*40)[^\s\/?&=#:;,@]{1,190}\.[a-z]{2,}/i, EMAILS = new RegExp(EMAIL.source, 'gi');
+  function cleanPath(s) { return s.replace(EMAILS, 'email-removed'); }
   function cleanUrl(href) {
     try {
       var u = new URL(href);
       var drop = [];
-      u.searchParams.forEach(function (_, k) { if (PRIVATE_PARAM.test(k)) drop.push(k); });
+      u.searchParams.forEach(function (v, k) { if (PRIVATE_PARAM.test(k) || EMAIL.test(k) || EMAIL.test(v)) drop.push(k); });
       for (var i = 0; i < drop.length; i++) u.searchParams.delete(drop[i]);
+      u.pathname = cleanPath(u.pathname);
+      u.hash = cleanPath(u.hash);
       return u.toString();
     } catch (e) { return href; }
   }
@@ -134,7 +139,7 @@
     if (lastPage !== null) flushTime(false);
     lastPage = page;
     pings = 0;
-    send('pageview', { r: firstView ? d.referrer : '' });
+    send('pageview', { r: firstView ? cleanUrl(d.referrer) : '' });
     firstView = false;
   }
   var hist = w.history;
@@ -220,7 +225,7 @@
       try {
         var u = new URL(a.href, loc.href);
         if (/^https?:$/.test(u.protocol) && u.hostname !== loc.hostname && !(domain && u.hostname.slice(-domain.length) === domain)) {
-          send('outbound', { n: u.origin + u.pathname }, true);
+          send('outbound', { n: u.origin + cleanPath(u.pathname) }, true);
         }
       } catch (err) {}
     }

@@ -4,14 +4,15 @@
   "main": "src/worker/index.ts",
   "compatibility_date": "2025-09-01",
   "observability": { "enabled": true },
-  // Cron (src/cron): hourly, check up to 8 live or in-review launch listings not checked in 20 hours; 06:00 UTC daily, alerts and the Monday digest.
+  // Cron (src/cron): hourly, check up to 8 live or in-review launch listings not checked in 20 hours, and drop old per-address event counts.
   "triggers": { "crons": ["0 * * * *"] },
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
     "not_found_handling": "none",
     // Static files skip the Worker. Anything else (client routes, unknown paths) runs it so missing pages return a real 404.
-    "run_worker_first": ["/api/*"]
+    // The home page runs it too, so link previews get this install's own address.
+    "run_worker_first": ["/", "/api/*"]
   },
   "d1_databases": [
     {

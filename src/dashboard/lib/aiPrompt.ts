@@ -11,7 +11,7 @@ export function buildAiPrompt(site: Site, origin: string, hosted = true): string
 
 To stop counting your own visits, open https://${site.domain}/?dm_ignore=true once in each browser you use (undo with ?dm_ignore=false).
 
-## My DataMonster values (already correct — use them as-is)
+## My DataMonster values (already correct, use them as-is)
 - Dashboard / API host: ${origin}
 - Website ID: ${site.id}
 - Tracked domain: ${site.domain} (all subdomains such as app.${site.domain} count as the same site)
@@ -19,14 +19,14 @@ To stop counting your own visits, open https://${site.domain}/?dm_ignore=true on
 - Script tag:
   ${script}
 
-## Task 1 — Install the tracking script on every page
+## Task 1: Install the tracking script on every page
 - Find how this project renders the HTML <head> (e.g. Next.js app/layout.tsx or pages/_document.tsx, Vite/CRA index.html, Astro/Nuxt/SvelteKit/Remix root layout, plain HTML files, WordPress header.php…) and add the script tag so it loads on EVERY page, including the logged-in app and any subdomains that live in this repo.
 - Next.js: use next/script: <Script defer data-website-id="${site.id}" src="${origin}/js/script.js" strategy="afterInteractive" />
 - Keep the exact attributes. Load it once only. Single-page-app navigation is tracked automatically; do not add manual pageview calls.
 - If the project has a Content-Security-Policy, allow ${origin} in script-src and connect-src.
 
-## Task 2 — Revenue attribution (most important)
-The script stores two first-party cookies: \`dm_vid\` (visitor id) and \`dm_sid\` (session id). Every payment must carry the visitor id (and the session id where the provider allows it) so DataMonster knows which visitor, and therefore which post, launch or page, made the money. First find which provider(s) this codebase uses, then follow only those sections.
+## Task 2: Revenue attribution (most important)
+The script stores two first-party cookies: \`dm_vid\` (visitor id) and \`dm_sid\` (session id). Every payment must carry the visitor id (and the session id where the provider allows it) so DataMonster knows which visitor, and which post, launch or page, brought the customer. First find which provider(s) this codebase uses, then follow only those sections.
 - Search for payment code. Dodo: "dodopayments", "checkoutSessions.create", "payments.create", "subscriptions.create", "checkout.dodopayments.com". Stripe: "stripe", "checkout.sessions.create", "buy.stripe.com". Polar: "@polar-sh/sdk", "polar.checkouts.create", "buy.polar.sh", "polar.sh/checkout".
 - Always MERGE into existing metadata or custom data; never drop keys that are already there.
 - Reading the cookies on the server (Next.js App Router): const jar = await cookies(); jar.get('dm_vid')?.value. If the checkout API is on a different domain than the site, read the ids in the browser with window.datamonster?.attribution?.() (returns { dm_visitor_id, dm_session_id }) and send them in the request body.
@@ -52,12 +52,12 @@ Do NOT add or change payment webhooks in this codebase for DataMonster. I connec
 - Stripe: ${origin}/api/webhooks/stripe/${site.id}
 - Polar: ${origin}/api/webhooks/polar/${site.id}
 
-## Task 3 — Identify logged-in users
+## Task 3: Identify logged-in users
 Right after a successful login/signup (and on app load when a user session exists), call:
   window.datamonster?.('identify', { user_id: user.id, email: user.email, name: user.name })
 This links anonymous visits to the person, and is a fallback for attributing payments by email.
 
-## Task 4 — Track key buttons as goals
+## Task 4: Track key buttons as goals
 Add data attributes to the most important calls-to-action (no JS needed), using short snake_case names:
   <button data-dm-goal="signup_click">  ·  data-dm-goal="start_trial"  ·  data-dm-goal="pricing_cta"  ·  data-dm-goal="checkout_click"
 Optional details: data-dm-goal-plan="pro". From code: window.datamonster?.('goal', 'signup_completed', { plan: 'pro' }).

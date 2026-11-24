@@ -177,7 +177,7 @@ function Funnels() {
             type="button"
             className="btn-danger"
             onClick={async () => {
-              if (!confirm(`Delete funnel "${current.name}"?`)) return;
+              if (!confirm(`Delete funnel "${current.name}"? This removes the funnel definition. Your visit and payment data stay.`)) return;
               await api(`/api/sites/${site.id}/funnels/${current.id}`, {
                 method: 'DELETE',
               });
@@ -447,7 +447,7 @@ function Journey({ search }: { search: string }) {
   >([]);
   const { data } = useApi<any[]>(`/api/sites/${site.id}/customers?${qs(q)}`, reloadKey + version);
   if (!data) return <Loading />;
-  if (!data.length) return <EmptyRow>No payments in this period. Connect Dodo Payments or Stripe in site settings to see who paid and where they came from.</EmptyRow>;
+  if (!data.length) return <EmptyRow>No payments in this period. Connect Stripe, Polar, Dodo Payments or the API in website settings to see who paid and where they came from.</EmptyRow>;
   const unmatched = data.filter((r) => !r.visitor_id).length;
   const rows = data.filter((r) => matches(r, search)).slice(0, all || search ? undefined : 10);
   return (
@@ -563,7 +563,7 @@ function Journey({ search }: { search: string }) {
                     </div>
                   </div>
                 ) : (
-                  <span className="text-faint" title="No visitor id in the payment metadata, and no return-page, email or timing match">
+                  <span className="text-faint" title="Nothing linked this payment to a visit: no visitor id, return page, email or timing match">
                     Not attributed
                   </span>
                 )}

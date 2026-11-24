@@ -4,7 +4,7 @@
 
 - Cloudflare Workers runs the TypeScript API and scheduled handlers (`src/worker/index.ts`). `wrangler.jsonc` sets compatibility date `2025-09-01` and enables observability.
 - Cloudflare D1 is the SQLite database, bound as `DB`; migrations live in `migrations/`.
-- One cron trigger runs hourly (`0 * * * *`) to verify launch listings. Cron jobs are in `src/cron/`.
+- One cron trigger runs hourly (`0 * * * *`) to verify launch listings and prune expired hashed IP rows. Cron jobs are in `src/cron/`.
 - Worker static assets come from `dist/`, bound as `ASSETS`. `/api/*` runs the Worker first; other asset paths use static asset handling.
 
 ## Backend and dependencies
@@ -19,7 +19,7 @@ The dashboard is React 18, built with Vite. Vite serves `src/dashboard` and prox
 
 ## Tracking script and widget
 
-The browser tracker and embeddable widget sources are in `src/tracker/` and `src/widget/`; static/public distribution assets are in `public/`. The tracker sends events to the Worker API. The widget is documented in `docs/widget.md` and supports the online widget feature. See `docs/agents.md` for agent integration details.
+The browser tracker and embeddable widget live in `public/js/script.js` and `public/js/widget.js`; static/public distribution assets are in `public/`. The tracker sends events to the Worker API. The widget is documented in `docs/widget.md` and supports the online widget feature. See `docs/agents.md` for agent integration details.
 
 ## Payments, authentication, and agents
 

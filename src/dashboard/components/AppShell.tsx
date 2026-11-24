@@ -297,7 +297,7 @@ function SiteSwitcher({ sites, site, onPick }: { sites: Site[]; site?: Site; onP
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={site ? `Switch site, current site ${site.domain}` : 'Choose a site'}
+        aria-label={site ? `Switch website, current website ${site.domain}` : 'Choose a website'}
         className="flex w-full items-center gap-2.5 rounded-xl border border-line bg-surface p-2 text-left transition-colors duration-150 hover:border-control"
       >
         {site ? (
@@ -311,7 +311,7 @@ function SiteSwitcher({ sites, site, onPick }: { sites: Site[]; site?: Site; onP
             </span>
           </>
         ) : (
-          <span className="min-w-0 flex-1 px-1 text-muted">Choose a site</span>
+          <span className="min-w-0 flex-1 px-1 text-muted">Choose a website</span>
         )}
         <Icon name="updown" size={14} className="text-faint" />
       </Button>

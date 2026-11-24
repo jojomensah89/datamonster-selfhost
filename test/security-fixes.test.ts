@@ -289,7 +289,7 @@ describe('9. Copy snapshot leaves emails out', () => {
     expect(text).not.toMatch(/@|%40/);
     expect(text).not.toMatch(/(one|two|three|four|five)\.example/);
     expect(text.split(/[\n\u2028]/).some((l) => l.startsWith('- 2026 forged'))).toBe(false);
-    expect(text).toContain('Unlinked buyer paid');
+    expect(text).toContain('Unlinked customer paid');
     // The dashboard itself still knows who it is.
     expect(data.feed.map((f) => f.email)).toEqual(expect.arrayContaining(['hidden@one.example', 'buyer@five.example']));
   });

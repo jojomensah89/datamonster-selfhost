@@ -78,7 +78,7 @@ try {
   base = `http://127.0.0.1:${port}`;
   const config = join(temp, 'wrangler.json');
   // Use an isolated configuration: no user secrets, cron triggers or remote bindings.
-  await writeFile(config, JSON.stringify({ name: 'datamonster-agent-smoke', main: join(root, 'src/worker/index.ts'), compatibility_date: '2025-09-01', assets: { directory: join(temp, 'dist'), binding: 'ASSETS', not_found_handling: 'none', run_worker_first: ['/api/*'] }, d1_databases: [{ binding: 'DB', database_name: 'datamonster', database_id: '00000000-0000-0000-0000-000000000000', migrations_dir: join(root, 'migrations') }] }));
+  await writeFile(config, JSON.stringify({ name: 'datamonster-agent-smoke', main: join(root, 'src/worker/index.ts'), compatibility_date: '2025-09-01', assets: { directory: join(temp, 'dist'), binding: 'ASSETS', not_found_handling: 'none', run_worker_first: ['/', '/api/*'] }, d1_databases: [{ binding: 'DB', database_name: 'datamonster', database_id: '00000000-0000-0000-0000-000000000000', migrations_dir: join(root, 'migrations') }] }));
   const password = randomBytes(24).toString('hex');
   await run(join(root, 'node_modules/vite/bin/vite.js'), ['build', '--outDir', join(temp, 'dist')]);
   console.log('PASS isolated build');

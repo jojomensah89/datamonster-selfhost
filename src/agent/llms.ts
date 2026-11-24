@@ -30,7 +30,7 @@ export function llmsTxt(origin: string, hosted: boolean) {
     : "This deployment is self-hosted: it runs in its owner's own Cloudflare account and its data stays there.";
   return `# ${SERVER_INFO.title}
 
-> ${SERVER_INFO.title} is agent-first revenue analytics. It records visits and payments and credits each payment to the visit that brought the customer, so an agent can answer "which source, post or launch made money?" over MCP or REST.
+> ${SERVER_INFO.title} is website and revenue analytics. It records visits and payments and credits each payment to the visit that brought the customer, so an agent can answer "which post, ad, launch or link brought customers?" over MCP or REST.
 
 ${where} Everything below uses this deployment's origin, ${origin}.
 

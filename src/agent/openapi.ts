@@ -48,7 +48,7 @@ export function openapi(origin: string) {
       title: 'DataMonster agent API',
       version: SERVER_INFO.version,
       description:
-        'Read revenue analytics from your own DataMonster install, and (with the write scope) create tagged links and annotations, configure public online widgets, and record and check launches. The same tools are served over MCP at /api/agent/mcp.',
+        'Read revenue analytics from DataMonster, and (with the write scope) create tagged links and annotations, configure public online widgets, and record and check launches. The same tools are served over MCP at /api/agent/mcp.',
     },
     servers: [{ url: origin }],
     components: { securitySchemes: { token: { type: 'http', scheme: 'bearer', description: 'An agent token (dm_...) created in the dashboard.' } } },

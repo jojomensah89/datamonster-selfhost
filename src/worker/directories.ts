@@ -1,6 +1,7 @@
 import type { Hono } from 'hono';
 import { byCategory, CATEGORY_LABEL, directoriesMarkdown, DIRECTORY_NOTE, filterDirectories, parseDirectoryFilter } from '../shared/directories';
 import type { AppEnv } from './env';
+import { sharePage } from './share';
 
 const HEADERS = { 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, max-age=300', 'X-Content-Type-Options': 'nosniff' };
 const TITLE = 'Launch directories | DataMonster';
@@ -20,13 +21,12 @@ export function mountDirectories(app: Hono<AppEnv>) {
   app.on('GET', ['/directories', '/directories/'], async (c) => {
     const index = await c.env.ASSETS.fetch(new URL('/', c.req.url));
     // The app's own headers (framing, referrer policy) stay.
-    const headers = new Headers(index.headers);
-    for (const h of ['Content-Length', 'ETag', 'Last-Modified']) headers.delete(h);
+    const { html: page, headers } = await sharePage(index, c.req.url, '/directories');
     // For agents and crawlers that read the page without JavaScript.
     const plain = byCategory(listed(c.req.url))
       .map(([cat, rows]) => `<h2>${esc(CATEGORY_LABEL[cat])}</h2><ul>${rows.map((d) => `<li><a href="${esc(d.url)}">${esc(d.name)}</a></li>`).join('')}</ul>`)
       .join('');
-    const html = (await index.text())
+    const html = page
       .replace(/<title\b[^>]*>[\s\S]*?<\/title>/i, () => `<title>${TITLE}</title>`)
       .replace(/(<meta\b[^>]*\bname="description"[^>]*\bcontent=")[^"]*/i, (_, a: string) => a + DESCRIPTION)
       .replace(/(<link\b[^>]*\brel="canonical"[^>]*\bhref=")[^"]*/i, (_, a: string) => `${a}https://datamonster.dev/directories`)

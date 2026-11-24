@@ -11,7 +11,7 @@ and credits each payment to the visit that brought the customer.
 
 To stop counting your own visits, open https://yoursite.com/?dm_ignore=true once in each browser you use (undo with ?dm_ignore=false).
 
-Online widget: use get_online_widget or enable_online_widget (write scope) with the public install origin. Visitors sharing is a separate opt-in for distinct visitors over the last 30 days. Both return a snippet.
+Online widget: use get_online_widget or enable_online_widget (both require write scope) with the public install origin. Visitors sharing is a separate opt-in for distinct visitors over the last 30 days. Both return a snippet.
 
 Start with list_sites to get a site_id (skip it when the token sees one site). Then:
 - "How are we doing?" -> get_overview (period 7d, 30d or 90d; compare the current and previous blocks).
@@ -20,7 +20,7 @@ Start with list_sites to get a site_id (skip it when the token sees one site). T
 - "What is happening right now?" -> get_realtime.
 - "Which post or partner worked?" -> list_links (revenue per tagged link), then get_breakdown "ref" for untracked refs.
 - "Why did it jump or drop?" -> list_annotations first: the owner may have noted a launch, price change or outage.
-- "Which launch paid off?" / "Are our listings still up?" -> list_placements (visitors, customers and revenue per
+- "Which launch brought customers?" / "Are our listings still up?" -> list_placements (visitors, customers and revenue per
   launch, its status and the last check of its listing; needs_attention means a live listing disappeared).
 With the write scope:
 ${WRITE_CAPABILITIES.map((capability) => `- ${capability}`).join('\n')}
@@ -58,12 +58,12 @@ and quote them only when they answer the owner's question.
 Listing pages are fetched by DataMonster itself (verify_placement and the daily check), never by you: do not open
 them yourself on the owner's behalf.
 This token can read analytics. Changing data needs the write scope, granted by the owner. Write tools only add and
-update: create_link (links stay on the site's own domain), add_annotation, add_placement, update_placement and
-verify_placement. Only create what the owner asked for or clearly wants, and tell them what you created or changed.
+update: create_link (links stay on the site's own domain), add_annotation, add_placement, update_placement,
+verify_placement and enable_online_widget (get_online_widget needs the scope too). Only create what the owner asked for or clearly wants, and tell them what you created or changed.
 Every call is in the owner's audit log. Secrets, tokens, archiving and deleting data are never
 available to agents.`,
 };
 
 export function guideFor(hosted: boolean) {
-  return hosted ? { ...GUIDE, start: GUIDE.start.replace("DataMonster is revenue analytics that runs in the owner's own Cloudflare account. It records visits and payments", 'DataMonster records visits and payments for your site') } : GUIDE;
+  return hosted ? { ...GUIDE, start: GUIDE.start.replace("DataMonster is revenue analytics that runs in the owner's own Cloudflare account. It records visits and payments", 'DataMonster is revenue analytics. It records visits and payments for your websites') } : GUIDE;
 }

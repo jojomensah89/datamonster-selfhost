@@ -64,7 +64,7 @@ export function LiveCard({ onOpen, paused }: { onOpen: () => void; paused: boole
           {(!data || active === 0) && (
             <p className="mt-3 flex items-center gap-1.5 text-xs text-muted">
               <span className={`h-1.5 w-1.5 rounded-full ${data && active === 0 ? 'bg-control' : 'bg-accent'}`} aria-hidden="true" />
-              {data && active === 0 ? 'Nobody on the site right now' : 'Loading visitors…'}
+              {data && active === 0 ? 'Nobody on the website right now' : 'Loading visitors…'}
             </p>
           )}
         </div>

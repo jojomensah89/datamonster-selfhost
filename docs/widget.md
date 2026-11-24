@@ -1,6 +1,6 @@
 # Online widget
 
-Enable sharing under site settings, Online widget. Sharing starts off. Separately opt into historical visitor sharing. Online counts distinct visitor IDs active within five minutes among sessions started in the last 30 days. Visitors counts distinct visitor IDs with sessions started in the rolling last 30 days.
+Enable sharing under site settings, Online widget. Sharing starts off. Separately opt into historical visitor sharing. Online counts distinct visitor IDs active within five minutes (among sessions started in the last 6 hours by default, or 30 days when visitor sharing is on). Visitors counts distinct visitor IDs with sessions started in the rolling last 30 days.
 
 GET /api/public/online/:siteId returns only `{ online, visitors }`. Each value is a public number or null when disabled or below the minimum. Missing sites and disabled sharing return an empty 404. The minimum defaults to 3 and cannot be smaller. Rounding defaults on and rounds down to two significant digits. Both metrics use the same privacy settings independently. Counts can be saved and compared by anyone.
 

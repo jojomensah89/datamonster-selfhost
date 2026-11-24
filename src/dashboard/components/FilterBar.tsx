@@ -7,7 +7,7 @@ import { Icon } from './ui';
 
 const FILTER_LABELS: Record<string, { label: string; dim: string }> = {
   channel: { label: 'Channel', dim: 'channel' },
-  source: { label: 'Referrer', dim: 'source' },
+  source: { label: 'Source', dim: 'source' },
   utm_campaign: { label: 'Campaign', dim: 'campaign' },
   utm_term: { label: 'Keyword', dim: 'keyword' },
   utm_source: { label: 'UTM source', dim: 'utm_source' },

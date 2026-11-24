@@ -138,7 +138,7 @@ export function OverviewCard({ data }: { data: OverviewData | null }) {
       setNoteOpen(false);
       setAnnVersion((v) => v + 1);
     } catch (err) {
-      setNoteError((err as Error).message || 'Could not save note');
+      setNoteError((err as Error).message || 'Could not save note. Try again.');
     } finally {
       setNoteBusy(false);
     }
@@ -152,7 +152,7 @@ export function OverviewCard({ data }: { data: OverviewData | null }) {
       await api(`/api/sites/${site.id}/annotations/${id}`, { method: 'DELETE' });
       setAnnVersion((v) => v + 1);
     } catch (err) {
-      setDelError((err as Error).message || 'Could not delete note');
+      setDelError((err as Error).message || 'Could not delete note. Try again.');
     } finally {
       setDeletingId(null);
     }
@@ -229,7 +229,7 @@ export function OverviewCard({ data }: { data: OverviewData | null }) {
                         type="text"
                         className="input h-9"
                         maxLength={200}
-                        placeholder="Launched on Product Hunt"
+                        placeholder="Started the spring sale"
                         value={noteText}
                         onChange={(e) => setNoteText(e.target.value)}
                         required

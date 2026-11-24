@@ -59,7 +59,7 @@ Anything else is refused with the allowed statuses. A listing check only ever mo
 | Result | When | What it does to the launch |
 |---|---|---|
 | `ok` | The page loads (2xx) and names your site: your domain appears anywhere in it (links included), or your site name appears in the visible text. | A launch that was draft, submitted, in review or removed becomes **live** (with today's date as launch day if it had none). |
-| `missing` | HTTP 404 or 410, or the listing redirects to the directory's front page. | Nothing changes except the result. A **live** launch with a `missing` result is flagged *needs attention* in the dashboard and in `list_placements` (`needs_attention`), and can send a "listing missing" alert. |
+| `missing` | HTTP 404 or 410, or the listing redirects to the directory's front page. | Nothing changes except the result. A **live** launch with a `missing` result is flagged *needs attention* in the dashboard and in `list_placements` (`needs_attention`). |
 | `unknown` | The page loads but does not name your site: it needs JavaScript to show its content, is not HTML, or just doesn't mention you. | Nothing. It is never treated as missing, because many directories render in the browser. Look at the page yourself. |
 | `error` | Another HTTP status, a timeout, a connection failure, too many redirects, or a redirect to a disallowed address. | Nothing. It is retried on a later run. |
 
@@ -74,7 +74,7 @@ The Worker has one hourly cron trigger in `wrangler.jsonc` (`"0 * * * *"`, code 
 - Launches that are **live or in review**, have a `listing_url` and are not archived.
 - Skipped if checked in the last 20 hours; never-checked ones go first, then the longest since a check.
 - At most **8 listings per hourly run** (the rest wait for a later hour), with a short pause between fetches. With the 20-hour skip rule, each listing is rechecked about once a day.
-- On a hosted install, sites whose owner's plan lapsed are skipped.
+- On a hosted install, paid accounts are checked ahead of free accounts when more than 8 listings are due.
 
 ## Reading the results
 

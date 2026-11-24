@@ -142,7 +142,7 @@ export const TOOLS: Tool[] = [
   },
   ...['enable_online_widget', 'get_online_widget'].map((name): Tool => ({
     name, title: name === 'enable_online_widget' ? 'Enable online widget' : 'Get online widget',
-    description: 'Configure public aggregate sharing and return the embed snippet. Visitors means distinct visitors over the last 30 days; historical sharing requires visitors=true.',
+    description: name === 'enable_online_widget' ? 'Configure public aggregate sharing and return the embed snippet. Visitors means distinct visitors over the last 30 days; historical sharing requires visitors=true.' : 'Read public online widget settings and return the embed snippet. Requires write scope.',
     scope: 'write', idempotent: true, openWorld: name === 'enable_online_widget',
     input: { type: 'object', additionalProperties: false, properties: {
       site_id: siteArg, enabled: {type:'boolean'}, visitors: {type:'boolean'}, threshold: {type:'integer',minimum:3,maximum:10000}, rounding: {type:'boolean'}, theme: {type:'string',enum:['auto','light','dark']}, powered: {type:'boolean'},
@@ -187,7 +187,7 @@ export const TOOLS: Tool[] = [
     name: 'get_breakdown',
     title: 'Breakdown',
     description:
-      'Visitors, revenue and customers grouped by one dimension, largest first. dimension "source" answers "which post, launch or site made money"; "ref" groups tagged links (?ref=); "page", "goal" and "exit_link" group events.',
+      'Visitors, revenue and customers grouped by one dimension, largest first. dimension "source" answers "which post, launch or directory brought customers and revenue"; "ref" groups tagged links (?ref=); "page", "goal" and "exit_link" group events.',
     scope: 'read',
     input: {
       type: 'object',
@@ -440,7 +440,7 @@ export const TOOLS: Tool[] = [
     name: 'list_placements',
     title: 'Launches',
     description:
-      "Where the site launched or is listed, each with its status, when its listing was last checked and the result, and the visitors, paying customers and revenue it brought in over the period (default 'all'). needs_attention marks a live listing that has disappeared. Use it to answer \"which launch paid off\" and \"are our listings still up\".",
+      "Where the site launched or is listed, each with its status, when its listing was last checked and the result, and the visitors, paying customers and revenue it brought in over the period (default 'all'). needs_attention marks a live listing that has disappeared. Use it to answer \"which launch brought customers\" and \"are our listings still up\".",
     scope: 'read',
     input: {
       type: 'object',

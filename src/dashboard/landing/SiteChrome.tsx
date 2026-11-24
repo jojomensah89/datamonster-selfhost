@@ -61,7 +61,7 @@ export function SiteNav({
           {showLandingLinks ? (
             <ul className="nav-links">
               <li>
-                <a href="/#ask">Agents</a>
+                <a href="/#ask">Ask AI</a>
               </li>
               <li>
                 <a href="/#features">Features</a>
@@ -69,11 +69,6 @@ export function SiteNav({
               <li>
                 <a href="/#pricing" data-dm-goal={!isDirs ? 'pricing_cta' : undefined} data-dm-goal-location={!isDirs ? 'nav' : undefined}>
                   Pricing
-                </a>
-              </li>
-              <li>
-                <a href="/directories" aria-current={isDirs ? 'page' : undefined}>
-                  Directories
                 </a>
               </li>
               <li>
@@ -120,18 +115,13 @@ export function SiteNav({
           <CollapsibleContent className="mobile-nav">
             <ul aria-label="Mobile navigation">
               <li>
-                <a href="/#ask">Agents</a>
+                <a href="/#ask">Ask AI</a>
               </li>
               <li>
                 <a href="/#features">Features</a>
               </li>
               <li>
                 <a href="/#pricing">Pricing</a>
-              </li>
-              <li>
-                <a href="/directories" aria-current="page">
-                  Directories
-                </a>
               </li>
               <li>
                 <a href="/#faq">FAQ</a>
@@ -175,7 +165,7 @@ export function SiteFooter({
                 {showLandingLinks && (
                   <>
                     <li>
-                      <a href="/#ask">Agents</a>
+                      <a href="/#ask">Ask AI</a>
                     </li>
                     <li>
                       <a href="/#features">Features</a>

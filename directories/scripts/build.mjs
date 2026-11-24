@@ -103,10 +103,10 @@ function footer() {
   <div class="foot-links">
     <div><h2>The list</h2><a href="/#list">All directories</a><a href="/directories.json">directories.json</a><a href="/schema.json">JSON Schema</a></div>
     <div><h2>Help keep it right</h2>${ext(`${REPO}/issues/new?title=${encodeURIComponent('Directory correction: ')}`, 'Report a correction')}${ext(`${REPO}/tree/main/directories`, 'Add a directory')}${ext(`${REPO}/blob/main/directories/README.md`, 'How entries are checked')}</div>
-    <div><h2>Licence</h2>${ext('https://creativecommons.org/licenses/by/4.0/', 'Data: CC BY 4.0')}<span>Credit “DataMonster launch directories” with a link back.</span></div>
+    <div><h2>License</h2>${ext('https://creativecommons.org/licenses/by/4.0/', 'Data: CC BY 4.0')}<span>Credit “DataMonster launch directories” with a link back.</span></div>
     <div><h2>DataMonster</h2>${ext(APP, 'Revenue analytics')}<span>This site sets no cookies and loads no analytics.</span></div>
   </div>
-  <div class="foot-last"><span>© ${new Date().getUTCFullYear()} DataMonster. Directory names belong to their owners; we are not affiliated with them.</span>${ext(APP, 'See which launch paid you', 'btn')}</div>
+  <div class="foot-last"><span>© ${new Date().getUTCFullYear()} DataMonster. Directory names belong to their owners; we are not affiliated with them.</span>${ext(APP, 'See which launch brings customers', 'btn')}</div>
 </footer>`;
 }
 
@@ -174,7 +174,7 @@ function indexPage() {
   </div>
 </section>
 
-<div class="marquee" aria-hidden="true"><div class="marquee__track">${'<span>Upvotes are not revenue.</span><span>Count what each launch paid.</span>'.repeat(3)}</div></div>
+<div class="marquee" aria-hidden="true"><div class="marquee__track">${'<span>Upvotes are not customers.</span><span>See which launch brings customers.</span>'.repeat(3)}</div></div>
 
 <section class="board about" aria-labelledby="about-title">
   <div class="about-head rise"><h2 id="about-title">How we keep it honest</h2></div>
@@ -204,8 +204,8 @@ function ctaRow() {
   return `<section class="board cta" aria-labelledby="cta-title">
   <div class="tile tile--navy flank" aria-hidden="true"></div>
   <div class="tile tile--blue main rise">
-    <h2 id="cta-title">See which launch actually paid you</h2>
-    <p>Upvotes are not revenue. DataMonster matches each launch to the visitors it sent and the money they paid, so you know where to launch next time.</p>
+    <h2 id="cta-title">See which launch brought you customers</h2>
+    <p>Upvotes are not customers. DataMonster matches each launch to the visitors, customers and revenue it brought, so you know where to launch next time.</p>
     <div class="row">${ext(APP, 'Try DataMonster', 'btn btn--light')}</div>
   </div>
   <figure class="tile tile--pic flank rise" style="--d:120ms"><img src="/assets/img/monster-celebrating.webp" width="560" height="560" loading="lazy" alt="The DataMonster mascot celebrating a first sale with a gold coin"></figure>

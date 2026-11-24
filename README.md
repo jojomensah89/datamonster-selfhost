@@ -1,13 +1,11 @@
 # DataMonster
 
-**Revenue analytics that your AI agent can run, in your own Cloudflare account.**
+**Know which post brought you customers.** Website and revenue analytics for any business, hosted or in your own Cloudflare account.
 
-DataMonster shows where your visitors came from (a tweet, an article, a launch directory, Google or an AI assistant),
-what they did, and **which post or launch paid you**. It runs as one Cloudflare Worker with a D1 database in your own
-account, so your data never leaves it.
+DataMonster shows where your visitors came from (a tweet, an ad, a launch directory, Google or an AI assistant), what they did, and **which post, ad, launch or link brought you customers**. Self-hosted, it runs as one Cloudflare Worker
+with a D1 database in your own account, so your data never leaves it.
 
-Agents are first-class users next to the dashboard. An agent can ask DataMonster questions ("which launch
-made money this month?") and act on it: create tagged links, add annotations and record launches, through an MCP
+Agents are first-class users next to the dashboard. An agent can ask DataMonster questions ("which launch brought customers this month?") and act on it: create tagged links, add annotations and record launches, through an MCP
 server, a REST API and agent skills. Every agent call is in an audit log, and agents can never read secrets or
 delete data.
 
@@ -62,8 +60,8 @@ npm run deploy
 ```
 
 `npm run deploy` builds the dashboard, applies the database migrations and deploys the Worker. Open the printed link,
-log in, add a website and copy its script tag. Each site's **Install and settings** page has a **Copy prompt for your
-coding agent** button, so Claude Code, Codex or Cursor can do the install for you.
+log in, add a website and copy its script tag. Each website's **Install and settings** page has a prompt to copy under
+**Let your coding agent do it**, so Claude Code, Codex or Cursor can do the install for you.
 
 ### Install on a website
 
@@ -130,20 +128,22 @@ scope. Amounts are integers in minor units; every result carries a `money` block
 | `list_links` | read | What each tagged link (`?ref=`) brought in: visitors, customers, revenue |
 | `list_annotations` | read | Notes left on days (launches, price changes, outages) to explain jumps and drops |
 | `list_placements` | read | Each launch with status, last listing check, visitors, customers and revenue; `needs_attention` marks a live listing that disappeared |
+| `list_directories` | read | A plain list of places to launch or get listed |
 | `get_guide` | read | How to use the tools, read attribution and stay safe (topics `start`, `attribution`, `questions`, `safety`) |
 | `create_link` | write | Makes a `?ref=` tagged link for a post, launch or newsletter and returns the URL to share |
 | `add_annotation` | write | Marks a day on the timeline with a short note |
 | `add_placement` | write | Records a launch or listing so its visitors and revenue are tracked and its listing is checked daily |
 | `update_placement` | write | Moves a launch along (`draft`, `submitted`, `in_review`, `live`, `rejected`, `removed`) or changes its URL, date, match rule or notes |
 | `verify_placement` | write | Fetches the listing page now and records whether the site is still listed |
+| `get_online_widget` | write | The public online widget's settings and snippet |
+| `enable_online_widget` | write | Turns on and configures the public online widget, and returns its snippet |
 
 Agents cannot read secrets, archive or delete anything.
 
 ## Payments
 
-Connect your payment provider so each payment is credited to the visitor who paid. Stripe and Dodo Payments are set
-up in the site's **Install and settings → Connect payments**. Polar uses the webhook URL plus a secret you save
-with the owner endpoint described in its section. Any other provider can post payments to the API.
+Connect your payment provider so each payment is credited to the visitor who paid. Stripe, Polar and Dodo
+Payments are set up in the website's **Install and settings → Connect payments**. Any other provider can post payments to the API.
 
 ### Dodo Payments
 
@@ -220,14 +220,14 @@ flow are in [docs/launches.md](docs/launches.md).
   | 5M D1 rows read/day | Hundreds of dashboard loads a day at 10k visitors/month |
   | 5 GB D1 storage | Years of data at side-project traffic |
 
-- **One hourly cron trigger** (`triggers.crons` in `wrangler.jsonc`, handled in `src/cron`). Every hour, the Worker checks up to 8 launch listings that have not been checked in the last 20 hours, so each listing is rechecked about once a day. Nothing else runs on a schedule.
+- **One hourly cron trigger** (`triggers.crons` in `wrangler.jsonc`, handled in `src/cron`). Every hour, the Worker checks up to 8 launch listings that have not been checked in the last 20 hours, so each listing is rechecked about once a day. The same hourly job deletes temporary hashed address counts older than 3 days. Nothing else runs on a schedule.
 - **Migrations** live in `migrations/` and are applied by `npm run deploy` (`wrangler d1 migrations apply datamonster --remote`). Run them alone with `npm run db:migrate`.
 - **Updating** a manual checkout: `git stash && git pull && git stash pop && npm run deploy` (or sync your fork in GitHub when deployed via the Deploy to Cloudflare button).
 - **Hosted mode (optional).** Setting `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` and `HOSTED_MODE=true` (which keeps the install hosted even if a Google value goes missing) turns on Google sign-in, per-account sites, a Free plan and a paid Pro plan through Polar (`POLAR_ACCESS_TOKEN`, `POLAR_PRODUCT_ID`, `POLAR_WEBHOOK_SECRET`, `POLAR_ENVIRONMENT`, `PLAN_PRICE`, `PLAN_EVENT_LIMIT`, `PLAN_EVENT_HARD_MULTIPLIER`, `PLAN_SITE_LIMIT`, `FREE_EVENT_LIMIT`, `DEPLOY_REPO_URL`, `PLAN_ADDRESS_DAILY_LIMIT`, `SUPPORT_EMAIL` and more; see `src/worker/env.ts`). This is for running DataMonster as a service for other people. Review the Terms, Privacy and Refund pages before going live.
 
 ## Privacy
 
-- **Your data stays in your account.** Visits, payments, launches and tokens are stored in the D1 database you created. DataMonster has no server of its own, and nothing phones home: the Worker only contacts what you configure (your payment provider's webhooks come in; listing checks go out to the listing pages you record). In hosted mode it also talks to Google for sign-in.
+- **Self-hosted, your data stays in your account.** Visits, payments, launches and tokens are stored in the D1 database you created. DataMonster has no server of its own, and nothing phones home: the Worker only contacts what you configure (your payment provider's webhooks come in; listing checks go out to the listing pages you record). In hosted mode, accounts share one database, each seeing only its own websites, and the Worker also talks to Google for sign-in and Polar for billing.
 - **Your visitors are not sent to third parties.** The tracking script only talks to your Worker. Fonts are served from your own Worker. Your own dashboard, in your browser, still loads a few things from elsewhere: icons for referrer sites and your site's favicon (through Google's favicon service) and, in hosted mode, your Google profile picture. That tells those services that you opened your dashboard, not who your visitors are.
 - **Tracking uses first-party cookies** (`dm_vid`, `dm_sid`). Depending on where your visitors are, you may need a consent banner, for example in the EU. That decision is yours.
 - **Agents see only what their token allows**, never secrets, and every call is in the audit log on the Agents page. Visitor-supplied text (referrers, UTM values, page paths) is treated as data, never as instructions.

@@ -35,11 +35,11 @@ function usePath() {
 }
 
 const SITE = 'https://datamonster.dev';
-const HOME_TITLE = 'DataMonster: know which post paid you';
+const HOME_TITLE = 'DataMonster: know which post brought you customers';
 const HOME_DESCRIPTION =
-  'Revenue analytics that answers your AI agent in plain words: which post, launch or directory paid you.';
+  'Website analytics for any business. See which post, ad, launch or link brought you customers, and what they spent.';
 const LEGAL_META = {
-  terms: { title: 'Terms of Service | DataMonster', description: 'The terms for using DataMonster, revenue-first web analytics.' },
+  terms: { title: 'Terms of Service | DataMonster', description: 'The terms for using DataMonster revenue analytics.' },
   privacy: { title: 'Privacy Policy | DataMonster', description: 'What data DataMonster collects, why, and how long it is kept.' },
   refund: { title: 'Refund Policy | DataMonster', description: 'How refunds work for DataMonster, including the 14-day money-back guarantee.' },
 };

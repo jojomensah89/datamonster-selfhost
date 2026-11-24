@@ -5,7 +5,7 @@ description: Set up DataMonster (revenue analytics) for the user: get their acco
 
 # DataMonster setup
 
-DataMonster shows where visitors come from and which source made money. Your job is to do the setup with the user, not to hold their secrets.
+DataMonster shows where visitors come from and which post, launch or directory brought you customers. Your job is to do the setup with the user, not to hold their secrets.
 
 ## Hard stops (read first)
 
@@ -24,7 +24,7 @@ Ask the user:
 
 ## 2. Get them a DataMonster account
 
-If they already use DataMonster, skip this. Otherwise they open the DataMonster address, choose **Continue with Google** and pick the plan themselves. Signing in and paying are the human's steps: never do either for them, and never ask for the password or card details. If they have no address, ask where they heard about DataMonster; do not guess one.
+If they already use DataMonster, skip this. Otherwise they open the DataMonster address, sign in (with Google on hosted, or their Worker password if self-hosted) and pick a plan if hosted. Signing in and paying are the human's steps: never do either for them, and never ask for the password or card details. If they have no address, ask where they heard about DataMonster; do not guess one.
 
 Wherever this skill says `YOUR-DATAMONSTER-HOST` or `YOUR-HOST`, use that address without `https://`.
 
@@ -168,7 +168,7 @@ Payments can be posted to `POST https://YOUR-HOST/api/v1/payments` with a `dmk_.
 
 ## 6. Connect the agent (optional, with the user's OK)
 
-1. For apps that support sign-in (Claude, ChatGPT), add `<dashboard-url>/api/agent/mcp` as a custom connector and click **Allow** (OAuth 2.1 — no token to copy).
+1. For apps that support sign-in (Claude, ChatGPT), add `<dashboard-url>/api/agent/mcp` as a custom connector and click **Allow** (OAuth 2.1, no token to copy).
 2. For token clients (Claude Code, Codex, Cursor, scripts), the human opens the dashboard's **Agents** page, creates a token (add write scope only if the agent should create links, notes and launches), and copies `dm_...` straight into their secret store or shell profile as `DATAMONSTER_TOKEN`. Do not ask them to paste it to you.
 3. `DATAMONSTER_URL` is the dashboard URL (no secret). The MCP endpoint is `<dashboard-url>/api/agent/mcp` with header `Authorization: Bearer $DATAMONSTER_TOKEN`; REST lives under `/api/agent/v1/<tool>` (OpenAPI at `/api/agent/v1/openapi.json`).
 4. Once connected, call the `get_guide` tool for current guidance and use the `datamonster-analyst` skill to read the data.
@@ -176,7 +176,6 @@ Payments can be posted to `POST https://YOUR-HOST/api/v1/payments` with a `dmk_.
 ## 7. Verify
 
 - Open the dashboard URL and verify `<dashboard-url>/api/agent/v1/openapi.json` responds with the OpenAPI spec.
-To stop counting your own visits, open https://yoursite.com/?dm_ignore=true once in each browser you use (undo with ?dm_ignore=false).
 - For payments, a test-mode purchase should show up in the customers list with a `matched_by` value (see the `datamonster-analyst` skill). `metadata` is the most reliable. If it shows `timing` or nothing, the metadata or return page is not wired up yet.
 
 ## Finish

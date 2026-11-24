@@ -127,7 +127,7 @@ export function LaunchesBlock() {
         )}
         {data && rows.length === 0 && (
           <div className="py-2.5">
-            <EmptyRow>No launches yet.</EmptyRow>
+            <EmptyRow>No launches yet. Add a launch to compare its visitors, customers and revenue.</EmptyRow>
           </div>
         )}
         {shown.map((l, i) => {

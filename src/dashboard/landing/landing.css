@@ -142,8 +142,8 @@
 /* An empty box the glyph field reads to place the world map; each breakpoint moves it. */
 .lp .plate-map { position: absolute; z-index: -2; right: -2%; top: 0; width: 60%; height: 62%; pointer-events: none; }
 .lp .hero-copy { align-self: end; }
-.lp .hero h1 { font-size: clamp(4rem, 1rem + 7.6vw, 8.75rem); line-height: 0.86; }
-.lp .hero h1 .nowrap { white-space: nowrap; }
+.lp .hero h1 { font-size: clamp(4rem, 7.9vw - 0.6rem, 6.5rem); line-height: 0.98; }
+.lp .hero h1 .nowrap { display: block; white-space: nowrap; }
 .lp .hero-sub { margin-top: 36px; max-width: 40ch; font-size: var(--step-lead); line-height: 1.35; color: #fff; }
 .lp .hero-actions { margin-top: 36px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
 .lp .hero-actions .lp-btn { height: 56px; padding: 0 28px; font-size: 1.0625rem; }
@@ -347,6 +347,7 @@
 
 /* ---------- tablet */
 @media (max-width: 1080px) {
+  .lp .hero h1 { font-size: clamp(4rem, 9vw, 6rem); }
   .lp .nav { height: auto; min-height: 80px; flex-wrap: wrap; gap: 8px 16px; padding-block: 12px; }
   .lp .nav-links { order: 3; flex-basis: 100%; flex-wrap: wrap; gap: 0 24px; }
   .lp .nav-links a { display: inline-flex; align-items: center; min-height: 44px; }
@@ -378,7 +379,7 @@
   .lp .plate { --pad: 20px; gap: 88px; }
   .lp .plate-map { top: 24px; right: -36%; width: 132%; height: 150px; }
   .lp .hero-copy { margin-top: 150px; }
-  .lp .hero h1 { font-size: clamp(3rem, 15vw, 5.5rem); }
+  .lp .hero h1 { font-size: clamp(2.2rem, 11.3vw, 4.5rem); }
   .lp .hero-sub { margin-top: 24px; font-size: 18px; }
   .lp .hero-actions { margin-top: 28px; }
   .lp .hero-actions .lp-btn { width: 100%; height: 52px; font-size: 1rem; }

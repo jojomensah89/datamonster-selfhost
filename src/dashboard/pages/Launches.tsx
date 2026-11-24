@@ -191,7 +191,7 @@ function SiteLaunches({ site }: { site: Site }) {
         {data && rows.length === 0 && (
           <div className="py-3">
             <EmptyRow>
-              {archived ? 'No launches, archived or not.' : 'No launches yet. Add Product Hunt, a directory or a newsletter feature, and its visitors and revenue show here.'}{' '}
+              {archived ? 'No launches, archived or not.' : 'No launches yet. Add a place that lists or features you, such as a local directory, a newsletter or Product Hunt, and its visitors, customers and revenue show here.'}{' '}
               <Button variant="raw" size="raw" type="button" className="card-link" onClick={() => setEditing('new')}>
                 Add a launch
               </Button>
@@ -371,7 +371,7 @@ function LaunchForm({ site, launch, onDone }: { site: Site; launch: Launch | nul
   return (
     <form onSubmit={save} className="space-y-4">
       <Field label="Name" id="lf-name">
-        <Input id="lf-name" className="input" required maxLength={80} value={f.name} onChange={set('name')} placeholder="Product Hunt" autoFocus />
+        <Input id="lf-name" className="input" required maxLength={80} value={f.name} onChange={set('name')} placeholder="Local directory" autoFocus />
       </Field>
       <Field label="Listing page" id="lf-url" hint="Checked daily while the launch is live or in review.">
         <Input
@@ -381,7 +381,7 @@ function LaunchForm({ site, launch, onDone }: { site: Site; launch: Launch | nul
           inputMode="url"
           value={f.listing_url}
           onChange={set('listing_url')}
-          placeholder="https://www.producthunt.com/posts/…"
+          placeholder="https://directory.example/your-business"
           aria-describedby="lf-url-hint"
         />
       </Field>
@@ -406,9 +406,9 @@ function LaunchForm({ site, launch, onDone }: { site: Site; launch: Launch | nul
           A visit counts when it matches any of these. Left empty, visits whose source is the name count.
         </p>
         <div className="grid gap-3 sm:grid-cols-3">
-          <Input className="input" aria-label="Source name" aria-describedby="lf-match-hint" value={f.match_source} onChange={set('match_source')} placeholder="Source, e.g. Product Hunt" />
-          <Input className="input" aria-label="Referrer domain" aria-describedby="lf-match-hint" value={f.match_domain} onChange={set('match_domain')} placeholder="producthunt.com" />
-          <Input className="input" aria-label="Ref tag" aria-describedby="lf-match-hint" value={f.match_ref} onChange={set('match_ref')} placeholder="ref, e.g. ph-launch" />
+          <Input className="input" aria-label="Source name" aria-describedby="lf-match-hint" value={f.match_source} onChange={set('match_source')} placeholder="Source, e.g. Local directory" />
+          <Input className="input" aria-label="Referrer domain" aria-describedby="lf-match-hint" value={f.match_domain} onChange={set('match_domain')} placeholder="directory.example" />
+          <Input className="input" aria-label="Ref tag" aria-describedby="lf-match-hint" value={f.match_ref} onChange={set('match_ref')} placeholder="ref, e.g. directory" />
         </div>
       </fieldset>
       <Field label="Notes" id="lf-notes">

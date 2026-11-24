@@ -143,3 +143,25 @@ it('tags supported checkout URLs and preserves Stripe/Dodo and custom Polar refe
   check('https://buy.stripe.com/abc', 'client_reference_id', 'dm_vid__sid');
   check('https://buy.stripe.com/abc?client_reference_id=custom', 'client_reference_id', 'custom');
 });
+
+it('never sends an email address from a URL', () => {
+  const source = readFileSync('public/js/script.js', 'utf8');
+  const { cleanUrl, cleanPath } = runInNewContext(source.slice(source.indexOf('  var PRIVATE_PARAM'), source.indexOf('  function send(')) + '; ({ cleanUrl, cleanPath })', { URL });
+  for (const [href, clean] of [
+    ['https://a.co/users/jane@acme.com', 'https://a.co/users/email-removed'],
+    ['https://a.co/u/jane%40acme.com/edit', 'https://a.co/u/email-removed/edit'],
+    ['https://a.co/u/jane%2540acme.com', 'https://a.co/u/email-removed'],
+    ['https://a.co/?u=jane%40acme.com&ref=x', 'https://a.co/?ref=x'],
+    ['https://a.co/?jane@acme.com=1', 'https://a.co/'],
+    ['https://a.co/?email=jane&to=a@b.io,c@d.io', 'https://a.co/'],
+    ['https://a.co/#/me/jane@acme.com', 'https://a.co/#/me/email-removed'],
+    // Not email addresses.
+    ['https://a.co/@jane/post-1?utm_source=x&payment_id=pay_1#top', 'https://a.co/@jane/post-1?utm_source=x&payment_id=pay_1#top'],
+    ['https://a.co/p/react@18.2.0', 'https://a.co/p/react@18.2.0'],
+  ]) expect(cleanUrl(href)).toBe(clean);
+  expect(cleanUrl('')).toBe('');
+  expect(cleanPath('/to/jane@acme.com')).toBe('/to/email-removed');
+  const t = Date.now();
+  cleanUrl('https://a.co/' + 'a'.repeat(100_000) + '@' + 'b.'.repeat(50_000));
+  expect(Date.now() - t).toBeLessThan(2000);
+});

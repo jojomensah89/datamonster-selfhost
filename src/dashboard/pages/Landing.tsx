@@ -26,10 +26,10 @@ const stagger = (i: number) => ({ '--i': i }) as CSSProperties;
 
 /** Illustrative numbers for the hero card. The card says "example" so nobody reads them as a customer's figures. */
 const SOURCES: { name: string; ico: string; color: string; ink?: string; visitors: string; revenue: string; width: string; note: ReactNode }[] = [
-  { name: 'Launch tweet', ico: 'X', color: '#0a1633', visitors: '2,904', revenue: '$1,240', width: '100%', note: <><b>Launch tweet</b> brought 31 buyers. Median time from first visit to payment: 2 days.</> },
-  { name: 'Product Hunt', ico: 'P', color: '#da552f', visitors: '1,733', revenue: '$860', width: '69%', note: <><b>Product Hunt</b> sent 1,733 visitors. 14 paid, most on the Pro plan.</> },
-  { name: 'Google', ico: 'G', color: '#ffffff', ink: '#1f54f0', visitors: '2,186', revenue: '$540', width: '44%', note: <><b>Google</b> buyers landed on /blog/self-host-analytics before paying.</> },
-  { name: 'chatgpt.com', ico: 'C', color: '#10a37f', visitors: '412', revenue: '$310', width: '25%', note: <><b>chatgpt.com</b>: 9 buyers came from ChatGPT answers this month, up from 2.</> },
+  { name: 'Spring sale post', ico: 'I', color: '#c13584', visitors: '2,904', revenue: '$1,240', width: '100%', note: <><b>Spring sale post</b> brought 31 customers, 39% of revenue.</> },
+  { name: 'Newsletter', ico: 'N', color: '#0a1633', visitors: '1,733', revenue: '$860', width: '69%', note: <><b>Newsletter</b> sent 1,733 visitors. 14 of them paid.</> },
+  { name: 'Google', ico: 'G', color: '#ffffff', ink: '#1f54f0', visitors: '2,186', revenue: '$540', width: '44%', note: <><b>Google</b> customers landed on your price list before paying.</> },
+  { name: 'ChatGPT', ico: 'C', color: '#10a37f', visitors: '412', revenue: '$310', width: '25%', note: <><b>ChatGPT</b> brought 9 customers this month, up from 2.</> },
 ];
 
 const KPIS = [
@@ -39,24 +39,25 @@ const KPIS = [
 ];
 
 const ASKS: { q: string; a: string; tone: string }[] = [
-  { q: 'Which post made me money this month?', a: 'Your launch tweet: $1,240 from 31 buyers, 39% of revenue. Product Hunt is second with $860.', tone: 'navy' },
+  { q: 'Which post brought me the most customers?', a: 'Your spring sale post: 31 customers and $1,240, 39% of revenue. The newsletter is second with 14 customers and $860.', tone: 'navy' },
   { q: 'How did this week compare with last week?', a: 'Revenue was $712, up 18% on the 7 days before. Visitors stayed level at 2,140, so revenue per visitor rose from $0.28 to $0.33.', tone: 'deep' },
-  { q: 'Which of my directory launches paid off?', a: 'Of 12 launches, 3 brought buyers: Product Hunt $860, Uneed $120, Microlaunch $45. The other 9 sent 214 visitors and no sales so far.', tone: 'blue' },
-  { q: 'Make a tracked link for my Reddit post.', a: 'Done: yoursite.com/?ref=reddit-sideproject. Visits and sales from it will show up under that name.', tone: 'navy' },
-  { q: 'I just went live on Uneed. Track it.', a: 'Added Uneed as a live launch. Its visitors and sales will show up under that launch, and the listing gets checked daily.', tone: 'deep' },
+  { q: 'Is the QR code on my flyer working?', a: 'Yes. It brought 214 visitors this month, and 6 of them became customers, worth $270.', tone: 'blue' },
+  { q: 'Make a link for my Instagram bio.', a: 'Done: yourshop.com/?ref=instagram-bio. Visits and sales from it will show up under that name.', tone: 'navy' },
+  { q: 'I just launched on Product Hunt. Track it.', a: 'Added Product Hunt as a live launch. Its visitors and sales will show up under that launch, and the listing gets checked daily.', tone: 'deep' },
 ];
 
 /** Short labels for the question list; the full question is what the chat shows. */
-const ASK_LABELS = ['Which post made money?', 'How was this week?', 'Which launch paid off?', 'Tag my Reddit post', 'Record my launch'];
+const ASK_LABELS = ['Which post brought customers?', 'How was this week?', 'Is my flyer working?', 'Make a link for Instagram', 'Record my launch'];
 
 const FAQ: [string, ReactNode][] = [
-  ['Is the free plan really free?', 'Yes: 5,000 events a month on one website, with no card. If you reach the limit, recording pauses until the 1st and nothing you have is lost.'],
-  ['How do I set it up?', 'Sign in with Google, add your website and paste one script tag. Or copy the setup prompt into Claude Code, Codex or Cursor and it does the install for you.'],
+  ['Is the free plan really free?', 'Yes: 5,000 events a month on one website, with no card. An event is a page view or a recorded click. If you reach the limit, recording pauses until the 1st and nothing you have is lost.'],
+  ['How do I set it up?', 'Sign in with Google, add your website and paste one line of code into it. If someone else looks after your website, send them the line. A coding assistant such as Claude Code, Codex or Cursor can also do it for you.'],
+  ['Does it work with my shop or booking site?', 'Visits work on any website where you can add a line of code. Sales show up when you take payments online with Stripe, Polar or Dodo. For another provider, or payments in person, a developer can send the payments to DataMonster.'],
+  ['Which visit gets the credit for a sale?', 'The last place the customer came from before paying, such as a post, an ad or Google. Coming back later by typing your address does not change it. You need payments connected, and a tagged link to tell one post from another.'],
   ['Can I cancel Pro?', 'Yes, any time. You keep Pro to the end of the month you paid for, then move to Free with your data. Your first payment can be refunded within 14 days.'],
-  ['Which AI assistants can use it?', 'Anything that speaks MCP or calls a REST API: Claude, ChatGPT, Codex, Cursor and personal assistant bots.'],
-  ['Can an agent break my data?', 'Agents get read access by default. Writing (links, notes, launches and listing checks) needs a scope you grant on a consent screen, every action is logged, and secrets and deletion are never given to an agent.'],
-  ['Which visit gets the credit for a sale?', 'The last non-direct visit before payment gets credit. Add a ?ref= tag to identify the exact post.'],
-  ['Does it use cookies?', 'Yes, two first-party cookies on your own domain, so a buyer who comes back days later is still recognised. Depending on where your visitors are, you may need a consent banner.'],
+  ['Which AI assistants can use it?', 'Claude, ChatGPT, Codex, Cursor and anything else that speaks MCP or calls a REST API.'],
+  ['Can an AI assistant break my data?', 'It can only look, unless you allow changes. Then it can add links, notes and launches, update launches, check their listings and set up the public visitor counter. Everything it does is logged, and it can never delete anything or see your payment keys.'],
+  ['Does it use cookies?', 'Yes, two first-party cookies on your own domain, so a customer who comes back days later is still recognized. Depending on where your visitors are, you may need a consent banner.'],
 ];
 
 type Plan = {
@@ -67,7 +68,7 @@ type Plan = {
 const isLive = (p: PlanInfo | null) => !!(p?.hosted && p?.checkout);
 const count = (k: number, one: string, many: string) => `${k.toLocaleString('en-US')} ${k === 1 ? one : many}`;
 
-const EVERYTHING = ['Revenue by source, journeys, funnels and a live globe', 'Launches and tagged links', 'MCP server and REST API for your agent', 'Stripe, Polar and Dodo Payments'];
+const EVERYTHING = ['Revenue by source, journeys, funnels and a live globe', 'Tagged links, QR codes and launches', 'Ask Claude or ChatGPT, or use MCP and the REST API', 'Stripe, Polar and Dodo Payments'];
 
 /** Free, Pro, or your own copy. Each says only what can be done today: no button leads somewhere that isn't ready. */
 export function plansFor(p: PlanInfo | null): Plan[] {
@@ -89,7 +90,7 @@ export function plansFor(p: PlanInfo | null): Plan[] {
     },
     {
       name: 'Self-host', price: '$0', per: 'on your Cloudflare', size: 68, lead: 2,
-      list: ['Your own copy, your own database', 'No event or website limits from us', 'The same dashboard, agents and payments', 'One owner, with a password', 'You run the updates'],
+      list: ['Your own copy, your own database', 'No event or website limits from us', 'The same dashboard, AI connections and payments', 'One owner, with a password', 'You set it up and run the updates'],
       ...(p?.deployUrl ? { btn: 'Deploy to Cloudflare', mark: 'cloudflare' as const, href: p.deployUrl, note: "Cloudflare's own limits and prices apply." } : { btn: 'Deploy to Cloudflare', mark: 'cloudflare' as const, href: null, note: 'Coming soon.' }),
     },
   ];
@@ -167,10 +168,10 @@ function Hero({ error, hosted, live }: { error: string | null; hosted: boolean; 
           <div className="plate-map" ref={mapRef} aria-hidden="true" />
           <div className="hero-copy">
             <h1>
-              <span className="nowrap">Know which</span> <span className="nowrap">post paid you</span>
+              <span className="nowrap">Know which post</span> <span className="nowrap">brought you</span> <span className="nowrap">customers</span>
             </h1>
             <p className="hero-sub rise" style={stagger(1)}>
-              Revenue analytics your AI agent can read. Ask it which post, launch or directory brought the money.
+              Website analytics for any business. See what brings in sales: a post, an ad, Google or a launch.
             </p>
             <div className="hero-actions rise" style={stagger(2)}>
               {live ? (
@@ -274,9 +275,9 @@ function Ask() {
       <div className="wrap">
         <div className="ask-plate">
           <div className="ask-list">
-            <h2 id="ask-h" className="h2 rise">Ask your agent</h2>
-            <p className="ask-lede rise" style={stagger(1)}>Claude, ChatGPT, Codex or Cursor answer from your own numbers.</p>
-            <div role="tablist" aria-label="Questions your agent can ask" className="ask-qs rise" style={stagger(2)}>
+            <h2 id="ask-h" className="h2 rise">Ask in plain words</h2>
+            <p className="ask-lede rise" style={stagger(1)}>Connect Claude, ChatGPT, Codex or Cursor and ask about your own numbers.</p>
+            <div role="tablist" aria-label="Questions you can ask" className="ask-qs rise" style={stagger(2)}>
               {ASK_LABELS.map((label, i) => (
                 <Button variant="raw" size="raw"
                   key={label}
@@ -298,7 +299,7 @@ function Ask() {
             <div className="chat-card" data-ui role="tabpanel" id="ask-panel" aria-labelledby={`ask-tab-${selected}`} aria-live="polite">
               <div className="chat-bar">
                 <span className="chat-dot" />
-                Your agent, with DataMonster connected
+                Your AI assistant, with DataMonster connected
               </div>
               <div className={`chat${out ? ' out' : ''}`}>
                 <p className="bubble me">{s.q}</p>
@@ -318,55 +319,55 @@ function Features() {
     <section className="sec" id="features" aria-labelledby="feat-h">
       <div className="wrap">
         <div className="feat-head">
-          <h2 className="h2 rise" id="feat-h">Built for agents</h2>
-          <p className="rise" style={stagger(1)}>Read access by default, every call logged, and the money traced to the post that earned it.</p>
+          <h2 className="h2 rise" id="feat-h">See what works</h2>
+          <p className="rise" style={stagger(1)}>Connect your payments and see where paying customers came from. Let an AI assistant look too, on your terms.</p>
         </div>
 
         <div className="feat-row feat-row--big">
           <article className="feat feat--blue rise" style={stagger(1)}>
             <div className="feat-copy">
-              <h3>Every agent action, logged</h3>
-              <p>See what each assistant read or changed, and revoke it in one click.</p>
+              <h3>You stay in control</h3>
+              <p>See what each AI assistant read or changed, and disconnect it in one click.</p>
             </div>
             <div className="log-card" data-ui>
-              <div><span>09:12</span><span>Claude</span><code>create_link</code><span>reddit-sideproject</span></div>
-              <div><span>09:12</span><span>Claude</span><code>get_breakdown</code><span>source, 30d</span></div>
-              <div><span>Mon 08:00</span><span>Claude</span><code>verify_placement</code><span>Product Hunt</span></div>
-              <div><span>Sun 22:40</span><span>Codex</span><code>add_annotation</code><span>Raised prices</span></div>
-              <div><span>Sun 22:39</span><span>Codex</span><code>get_overview</code><span>7d</span></div>
+              <div><span>09:12</span><span>Claude</span><code>Created a tagged link</code><span>instagram-bio</span></div>
+              <div><span>09:12</span><span>Claude</span><code>Read a breakdown</code><span>source, 30d</span></div>
+              <div><span>Mon 08:00</span><span>ChatGPT</span><code>Read customers</code><span>7d</span></div>
+              <div><span>Sun 22:40</span><span>Codex</span><code>Added a note</code><span>Raised prices</span></div>
+              <div><span>Sun 22:39</span><span>Codex</span><code>Read the overview</code><span>7d</span></div>
             </div>
           </article>
           <article className="feat feat--navy feat--fig rise" style={stagger(2)}>
             <p className="fig" data-ui>$860</p>
             <div className="feat-copy">
-              <h3>Revenue per directory</h3>
-              <p>Product Hunt paid. Nine others sent visitors and no sales.</p>
+              <h3>Customers and revenue per link</h3>
+              <p>The newsletter brought 14 customers. Nine other links sent visitors and no sales.</p>
             </div>
           </article>
         </div>
 
         <div className="feat-row feat-row--three">
           <article className="feat feat--sky rise" style={stagger(1)}>
-            <div className="chip" data-ui>write <span className="toggle" /></div>
+            <div className="chip" data-ui>Make changes <span className="toggle" /></div>
             <div className="feat-copy">
-              <h3>Scoped tokens</h3>
-              <p>Read by default. Writing needs your click.</p>
+              <h3>Your permission first</h3>
+              <p>AI assistants can only look, until you allow changes.</p>
             </div>
           </article>
           <article className="feat feat--light rise" style={stagger(2)}>
             <div className="chip chip--status" data-ui>Matched: return page</div>
             <div className="feat-copy">
               <h3>Honest matching</h3>
-              <p>Every payment says how it was linked to a visitor.</p>
+              <p>Each payment says how it was linked to a visitor, or that it wasn't.</p>
             </div>
           </article>
           <article className="feat feat--ink rise" style={stagger(3)}>
             <div className="tg-card" data-ui>
-              <b>Timeline note · Nov 12</b>Raised prices to $29/mo — conversion held steady.
+              <b>Timeline note · Nov 12</b>Raised prices. Sales held steady.
             </div>
             <div className="feat-copy">
               <h3>Timeline notes</h3>
-              <p>Mark launches and price changes right on the chart.</p>
+              <p>Mark promotions, launches and price changes right on the chart.</p>
             </div>
           </article>
         </div>
@@ -374,8 +375,8 @@ function Features() {
         <div className="own-strip rise">
           <Spike size={120} className="own-spike" />
           <div>
-            <h3>No IP addresses kept</h3>
-            <p>Location is rounded to about 1 km.</p>
+            <h3>No exact locations</h3>
+            <p>A visitor's location is rounded to about 1 km.</p>
           </div>
           <div>
             <h3>Never sold</h3>
@@ -383,7 +384,7 @@ function Features() {
           </div>
           <div>
             <h3>Stripe, Polar, Dodo</h3>
-            <p>Or send payments from your own backend.</p>
+            <p>Or send payments from your own system.</p>
           </div>
         </div>
       </div>

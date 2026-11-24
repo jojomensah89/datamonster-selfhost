@@ -12,6 +12,7 @@ import { handleDodoWebhook, handleGoalApi, handlePaymentApi, handleStripeWebhook
 import { mountAgent, mountOAuth } from '../agent';
 import { mountProviders } from '../providers';
 import { scheduled } from '../cron';
+import { sharePage } from './share';
 import { breakdown, customers, funnel, makeCtx, overview, realtime, sparklines, visitorProfile, visitors, type FunnelStep } from './stats';
 
 import { mountOnline, widgetSettings } from './online';
@@ -392,18 +393,19 @@ mountProviders(app);
 
 app.all('/api/*', (c) => c.json({ error: 'not found' }, 404));
 
-// Static files are served before the Worker runs. What reaches here is a client-side route, or a page that doesn't exist.
-const PUBLIC_PAGES = /^\/(terms|privacy|refund)\/?$/;
+// Static files are served before the Worker runs. What reaches here is the home page (run_worker_first in wrangler.jsonc,
+// for its link preview), a client-side route, or a page that doesn't exist.
+const PUBLIC_PAGES = /^\/((terms|privacy|refund)\/?)?$/;
 const APP_PAGES = /^\/(agents\/?|launches\/?|links\/?|oauth\/consent\/?|billing(\/.*)?|site\/[\w-]+(\/settings)?\/?)$/;
 
 app.all('*', async (c) => {
   const path = new URL(c.req.url).pathname;
   const index = await c.env.ASSETS.fetch(new URL('/', c.req.url));
-  const headers = new Headers(index.headers);
+  const { html, headers } = await sharePage(index, c.req.url, PUBLIC_PAGES.test(path) ? path : '/');
   // Signed-in pages are private and unknown paths shouldn't rank: keep both out of search results.
   if (!PUBLIC_PAGES.test(path)) headers.set('X-Robots-Tag', 'noindex');
   const status = PUBLIC_PAGES.test(path) || APP_PAGES.test(path) ? 200 : 404;
-  return new Response(index.body, { status, headers });
+  return new Response(html, { status, headers });
 });
 
 // DataMonster: the Worker also answers cron triggers (src/cron). `request` keeps app.request working for the tests.

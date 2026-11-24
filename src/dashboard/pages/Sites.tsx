@@ -277,7 +277,7 @@ function AddSite({ open, onClose }: { open: boolean; onClose: () => void }) {
           <label className="label" htmlFor="add-name">
             Name
           </label>
-          <Input id="add-name" className="input" placeholder="My SaaS" value={name} onChange={(e) => setName(e.target.value)} />
+          <Input id="add-name" className="input" placeholder="My shop" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>

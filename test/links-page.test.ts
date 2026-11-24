@@ -273,7 +273,7 @@ describe('links page', () => {
 
   it('says when the link already existed, and that it came back from the archive', async () => {
     const user = userEvent.setup();
-    links = [link({ ref: 'x-launch', label: 'Old launch', archived_at: 5 })];
+    links = [link({ ref: 'instagram-launch', label: 'Old launch', archived_at: 5 })];
     await open();
     await user.click(await screen.findByRole('button', { name: 'Make a new link' }));
     await user.type(screen.getByLabelText('Name'), 'launch');
@@ -329,7 +329,7 @@ describe('links page', () => {
     expect(await screen.findByText("Couldn't load links: boom.")).toBeTruthy();
     fail = false;
     await userEvent.setup().click(screen.getByRole('button', { name: 'Retry' }));
-    expect(await screen.findByRole('heading', { name: 'See which post pays' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'See which post brings you customers' })).toBeTruthy();
   });
 });
 
@@ -337,8 +337,8 @@ describe('links: nothing yet', () => {
   it('explains the page with a labelled example and one primary button', async () => {
     const user = userEvent.setup();
     await open();
-    const empty = await screen.findByRole('region', { name: 'See which post pays' });
-    expect(empty.textContent).toContain('Make a link for each place you share, and its visitors and revenue show up here.');
+    const empty = await screen.findByRole('region', { name: 'See which post brings you customers' });
+    expect(empty.textContent).toContain('Make a link for each place you share: a post, an ad, a newsletter or a QR code on a flyer. Its visitors, customers and revenue show up here.');
     // The drawing is only for the eye, and says it is an example; the text says it for everyone else.
     const drawn = empty.querySelector('[aria-hidden="true"]')!;
     expect(drawn.textContent).toContain('Example');
@@ -357,7 +357,7 @@ describe('links: nothing yet', () => {
     await open();
     expect(await screen.findByText(/Every link is archived\. Archived links still work\./)).toBeTruthy();
     expect(document.querySelector('.link-sample')).toBeNull();
-    expect(screen.queryByText('See which post pays')).toBeNull();
+    expect(screen.queryByText('See which post brings you customers')).toBeNull();
   });
 });
 
@@ -619,7 +619,7 @@ describe('links as bars', () => {
     await user.click(screen.getByRole('button', { name: 'Done' }));
     await waitFor(() => expect(openRows()).toEqual(['Fresh']));
     expect((screen.getByRole('searchbox') as HTMLInputElement).value).toBe('');
-    expect(scrolled.at(-1)).toBe('link-lnk_x-fresh-item');
+    expect(scrolled.at(-1)).toBe('link-lnk_instagram-fresh-item');
   });
 
   describe('flow', () => {

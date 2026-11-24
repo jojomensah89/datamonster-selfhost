@@ -5,7 +5,7 @@ description: Keep DataMonster tracking current while writing site code. Add goal
 
 # DataMonster instrument
 
-When you add or change user-facing code on a site that already has the DataMonster script, keep tracking in step with the product so the owner can later ask "which source made money" and get a real answer. If DataMonster is not installed yet, use the `datamonster-setup` skill first.
+When you add or change user-facing code on a site that already has the DataMonster script, keep tracking in step with the product so the owner can later ask "which post, launch or source brought customers" and get a real answer. If DataMonster is not installed yet, use the `datamonster-setup` skill first.
 
 ## Safety rule
 
@@ -77,7 +77,7 @@ If you touch checkout code, keep the visitor cookies flowing into the payment pr
 metadata: { dm_visitor_id: jar.get('dm_vid')?.value ?? '', dm_session_id: jar.get('dm_sid')?.value ?? '' }
 ```
 
-For Stripe, also keep `success_url: 'https://yoursite.com/thanks?session_id={CHECKOUT_SESSION_ID}'` and make sure the thank-you page loads the script. For Dodo Payments, keep the return URL pointing at a page that loads the script. Do not remove these when refactoring.
+For Stripe, also keep `success_url: 'https://yoursite.com/thanks?session_id={CHECKOUT_SESSION_ID}'` and make sure the thank-you page loads the script. For Dodo Payments, keep the return URL pointing at a page that loads the script. For Polar, pass `dm_visitor_id` in metadata and keep `checkout_id={CHECKOUT_ID}` on the success URL. Do not remove these when refactoring.
 
 ## 5. Before you finish
 

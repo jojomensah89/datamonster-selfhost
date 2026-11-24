@@ -34,7 +34,7 @@ const PANELS: Record<'locations' | 'channels' | 'pages' | 'devices', TabDef[]> =
   ],
   channels: [
     { label: 'Channel', dim: 'channel', filter: 'channel' },
-    { label: 'Referrer', dim: 'source', filter: 'source' },
+    { label: 'Source', dim: 'source', filter: 'source' },
     { label: 'Campaign', dim: 'campaign', filter: 'utm_campaign' },
     { label: 'Keyword', dim: 'keyword', filter: 'utm_term' },
   ],
@@ -145,11 +145,11 @@ export function Dashboard({ siteId }: { siteId: string }) {
     };
   }, [site, q, reloadKey, overview?.decimals, addFilter]);
 
-  if (sitesError && !sites) return <BlockError what={`Couldn't load this site: ${sitesError}.`} onRetry={() => setSitesKey((k) => k + 1)} />;
+  if (sitesError && !sites) return <BlockError what={`Couldn't load this website: ${sitesError}.`} onRetry={() => setSitesKey((k) => k + 1)} />;
   if (sites && !site) {
     return (
       <EmptyRow>
-        This site doesn't exist or you can't see it.{' '}
+        This website doesn't exist or you can't see it.{' '}
         <Button variant="raw" size="raw" type="button" className="card-link" onClick={() => navigate('/')}>
           All websites
         </Button>

@@ -33,7 +33,7 @@ export function SitePage({ title, children }: { title: string; children: (site: 
   const { data: sites, error } = useApi<Site[]>('/api/sites');
   const site = sites?.find((s) => s.id === wanted) ?? (sites?.length ? sites[0] : undefined);
 
-  if (error && !sites) return <BlockError what={`Couldn't load your sites: ${error}.`} />;
+  if (error && !sites) return <BlockError what={`Couldn't load your websites: ${error}.`} />;
   if (!sites) {
     return (
       <div aria-busy="true">

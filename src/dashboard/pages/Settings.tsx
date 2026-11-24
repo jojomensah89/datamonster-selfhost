@@ -24,7 +24,7 @@ const SECTIONS = [
   { id: 'goals', label: 'Goals' },
   { id: 'payments', label: 'Payments' },
   { id: 'general', label: 'General' },
-  { id: 'delete', label: 'Delete site' },
+  { id: 'delete', label: 'Delete website' },
 ] as const;
 type SectionId = (typeof SECTIONS)[number]['id'];
 
@@ -194,7 +194,7 @@ function WebhookStatus({ name, last, checking, onCheck, failed, className = '' }
         <span className="text-muted">Secret saved.</span>
       </p>
       <p className="mt-1.5 max-w-[60ch] text-muted">
-        This turns to received once {name} sends a payment or refund for this site. A test payment in {name} is the quickest way to check.{' '}
+        This turns to received once {name} sends a payment or refund for this website. A test payment in {name} is the quickest way to check.{' '}
         <Button variant="raw" size="raw" type="button" className="card-link" onClick={onCheck} disabled={checking}>
           {checking ? 'Checking…' : 'Check again'}
         </Button>
@@ -360,7 +360,7 @@ export function Settings({ siteId }: { siteId: string }) {
         <div className="min-w-0">
       <AiSetup site={site} origin={origin} />
 
-      <Section id="install" title="Install the script" desc={<>Add it to the <code className="text-[13px] text-ink">&lt;head&gt;</code> of every page on {site.domain}.</>}>
+      <Section id="install" title="Install the script" desc={<>Add this line to the <code className="text-[13px] text-ink">&lt;head&gt;</code> of every page on {site.domain}. Many website builders have a box for it, called custom code or header code.</>}>
         <Code label="HTML">{`<script defer data-website-id="${site.id}" src="${origin}/js/script.js"></script>`}</Code>
         <Collapsible className="mt-4 text-sm">
           <CollapsibleTrigger asChild><Button variant="raw" size="raw" type="button" className="cursor-pointer font-medium text-ink">Next.js, and beating ad blockers<DisclosureChevron className="disclosure-chevron ml-2 inline-block h-4 w-4" aria-hidden="true" /></Button></CollapsibleTrigger><CollapsibleContent>
@@ -378,7 +378,7 @@ export function Settings({ siteId }: { siteId: string }) {
 // then: <script defer data-website-id="${site.id}" data-api="/stats/event" src="/stats/script.js"></script>`}</Code>
             <div className="flex items-start justify-between gap-4 rounded-xl border border-line bg-raised p-4">
               <label htmlFor="proxy-location" className="min-w-0">
-                <span className="block font-medium text-ink">My site serves the script itself</span>
+                <span className="block font-medium text-ink">My website serves the script itself</span>
                 <span className="mt-0.5 block text-muted">Turn this on if you use the setup above. Your visitors all arrive through your server, so this allows more events from one address and uses the visitor locations Vercel sends. Leave it off otherwise: anyone can send those headers.</span>
               </label>
               <Switch id="proxy-location" checked={!!site.proxy_location} onCheckedChange={(on) => save({ proxy_location: on })} />
@@ -394,7 +394,7 @@ export function Settings({ siteId }: { siteId: string }) {
       </Section>
 
       <OnlineWidgetSettings key={site.id} siteId={site.id} />
-      <Section id="goals" title="Track goals">
+      <Section id="goals" title="Track goals" desc="Count clicks on a button, such as Book now or Get started. This needs a small change to the button in your website's code.">
         <Code label="HTML / JS">{`<button data-dm-goal="signup">Get started</button>
 
 window.datamonster('goal', 'signup', { plan: 'pro' });
@@ -437,17 +437,17 @@ window.datamonster('identify', { email: user.email, name: user.name });`}</Code>
         </div>
       )}
 
-      <Section id="delete" title="Delete this site" desc="Removes the site and everything stored for it: visits, payments, goals, funnels, links, notes and launches. This cannot be undone.">
+      <Section id="delete" title="Delete this website" desc="Removes the website from DataMonster and everything stored for it: visits, payments, goals, funnels, links, notes and launches. This cannot be undone.">
         <Button variant="raw" size="raw"
           type="button"
           className="btn-danger"
           onClick={async () => {
-            if (prompt(`Type ${site.domain} to delete this site and all of its data`) !== site.domain) return;
+            if (prompt(`Type ${site.domain} to delete this website and all of its data`) !== site.domain) return;
             await api(`/api/sites/${siteId}`, { method: 'DELETE' });
             navigate('/');
           }}
         >
-          Delete site and all data
+          Delete website and all data
         </Button>
       </Section>
         </div>
@@ -524,7 +524,7 @@ function Revenue(props: RevenueProps) {
     { id: 'api', label: 'Other or API', span: '' },
   ];
   return (
-    <Section id="payments" title="Connect payments">
+    <Section id="payments" title="Connect payments" desc="So each sale can be linked to the visit that brought it.">
       <div className="mb-5 grid grid-cols-2 gap-2 sm:grid-cols-4" role="tablist" aria-label="Payment provider">
         {tabs.map((t) => (
           <Button variant="raw" size="raw"
@@ -744,7 +744,7 @@ await dodo.checkoutSessions.create({
       </Steps>
       <Collapsible className="mt-5 text-sm">
         <CollapsibleTrigger asChild><Button variant="raw" size="raw" type="button" className="cursor-pointer font-medium text-ink">Selling other products from the same Dodo account?<DisclosureChevron className="disclosure-chevron ml-2 inline-block h-4 w-4" aria-hidden="true" /></Button></CollapsibleTrigger><CollapsibleContent>
-        <p className="mt-2 text-muted">List this site's product ids so only their payments count.</p>
+        <p className="mt-2 text-muted">List this website's product ids so only their payments count.</p>
         <div className="mt-2 flex gap-2">
           <Input
             className="input font-mono"
@@ -789,9 +789,9 @@ function PendingDodoPayments({ site }: { site: Site }) {
   if (!rows.length) return null;
   return (
     <div className="notice mt-5 p-4">
-      <p className="font-medium">Payments waiting for a site</p>
+      <p className="font-medium">Payments waiting for a website</p>
       <p className="mt-1">
-        These came from a product that isn't linked to one of your sites yet, so they aren't counted anywhere. They're placed automatically
+        These came from a product that isn't linked to one of your websites yet, so they aren't counted anywhere. They're placed automatically
         once a payment for it arrives with a visitor from {site.name}. Know they're {site.name}'s? Count them now.
       </p>
       <ul className="mt-3 space-y-2">
@@ -868,7 +868,7 @@ await stripe.checkout.sessions.create({
 function ApiSetup({ site, origin, onKeyRotated }: RevenueProps) {
   return (
     <>
-      <p className="mb-3 text-sm text-muted">Any other provider: send payments from your backend with this site's API key.</p>
+      <p className="mb-3 text-sm text-muted">Any other provider: send payments from your backend with this website's API key.</p>
       <div className="mb-4 flex gap-2">
         <Input className="input font-mono" aria-label="Site API key" readOnly value={site.api_key} />
         <Button variant="raw" size="raw"
@@ -912,7 +912,7 @@ function AiSetup({ site, origin }: { site: Site; origin: string }) {
   const { data: auth } = useApi<{ hosted: boolean }>('/api/auth/me');
   const prompt = buildAiPrompt(site, origin, auth?.hosted ?? true);
   return (
-    <Section id="coding-agent" title="Let your coding agent do it" desc="Paste one prompt into Claude Code, Codex or Cursor in your site's repo. It installs the script, goals and payment attribution below." first>
+    <Section id="coding-agent" title="Let your coding agent do it" desc="Paste one prompt into Claude Code, Codex or Cursor where your website's code is. It sets up the script, goals and payments below. If someone else looks after your website, send them the prompt." first>
       <div className="well p-4">
         <CopyRow value={prompt} shown={prompt.split('\n')[0]} what="the prompt" mono={false}>
           <Hint text={open ? 'Hide prompt' : 'Preview prompt'}>

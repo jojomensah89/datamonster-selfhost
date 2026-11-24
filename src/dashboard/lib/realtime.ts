@@ -172,7 +172,7 @@ export function snapshotText(site: { name: string; domain: string; timezone: str
   if (d.feed.length) {
     lines.push('', 'Recent activity (newest first):');
     for (const f of d.feed.slice(0, 25)) {
-      const who = f.visitor_id ? displayName(f.visitor_id, plain(f.name)) : plain(f.name) || 'Unlinked buyer';
+      const who = f.visitor_id ? displayName(f.visitor_id, plain(f.name)) : plain(f.name) || 'Unlinked customer';
       const where = plain(placeName(f.city, f.country));
       const what =
         f.type === 'pageview' ? `viewed ${plain(f.label)}` : f.type === 'goal' ? `completed ${plain(f.label)}` : f.type === 'payment' ? `paid ${money(f.amount ?? 0)}` : `refunded ${money(Math.abs(f.amount ?? 0))}`;

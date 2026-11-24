@@ -38,7 +38,7 @@ interface AuditRow {
 
 /** Plain names for the agent tools. Unknown tools fall back to their name in words. */
 const TOOL_LABELS: Record<string, string> = {
-  list_sites: 'Listed sites',
+  list_sites: 'Listed websites',
   get_overview: 'Read the overview',
   get_breakdown: 'Read a breakdown',
   get_customers: 'Read customers',
@@ -48,8 +48,8 @@ const TOOL_LABELS: Record<string, string> = {
   get_funnel: 'Read funnel results',
   get_realtime: 'Read realtime',
   get_guide: 'Read the guide',
-  list_links: 'Read tracked links',
-  create_link: 'Created a tracked link',
+  list_links: 'Read tagged links',
+  create_link: 'Created a tagged link',
   list_annotations: 'Read notes',
   add_annotation: 'Added a note',
   add_placement: 'Added a launch',
@@ -60,7 +60,7 @@ const TOOL_LABELS: Record<string, string> = {
 };
 const toolLabel = (t: string) => TOOL_LABELS[t] ?? t.replace(/_/g, ' ').replace(/^./, (c) => c.toUpperCase());
 
-const READ_TOOLS = 'Overview, sources and breakdowns, customers, visitors and their journeys, funnels, realtime, tracked links, notes and launches.';
+const READ_TOOLS = 'Overview, sources and breakdowns, customers, visitors and their journeys, funnels, realtime, tagged links, notes and launches.';
 /** The environment variable every copyable snippet reads the token from, so no secret ever sits in a prompt or a config file. */
 const TOKEN_ENV = 'DATAMONSTER_TOKEN';
 
@@ -115,7 +115,7 @@ export function Agents() {
         title="Connect an assistant"
         desc={
           <>
-            In Claude.ai or ChatGPT, add the MCP URL as a connector, then sign in and click Allow: no token to handle. Claude Code, Cursor and other MCP clients use a token you create below, read from the {TOKEN_ENV} environment variable. The REST API serves the same tools for scripts.
+            Ask about your numbers in Claude or ChatGPT: add the MCP server URL as a connector, sign in and click Allow. For developers, Claude Code, Cursor, other MCP clients and the REST API use a token you create below, read from the {TOKEN_ENV} environment variable.
           </>
         }
         first
@@ -154,7 +154,7 @@ export function Agents() {
             <WriteList className="mt-1" />
           </Rule>
           <Rule title="Admin" status={<span className="pill pill-neg">Never</span>}>
-            Payment keys, API keys, agent tokens, site settings and deleting data stay with you, in this dashboard. No token can be granted this.
+            Payment keys, API keys, agent tokens, website settings and deleting data stay with you in this dashboard. No token can be granted this.
           </Rule>
         </div>
       </Setting>
@@ -293,7 +293,7 @@ Once connected, call get_guide first, then list_sites to find my site ids. Answe
           <ol className="mt-2 list-decimal space-y-1 pl-5 text-muted marker:text-faint">
             <li>In Claude.ai or ChatGPT, open the connector settings and add a custom connector.</li>
             <li>Paste the MCP server URL above.</li>
-            <li>Sign in to DataMonster when it asks, choose the sites and whether it may make changes, then click Allow.</li>
+            <li>Sign in to DataMonster when it asks, choose the websites and whether it may make changes, then click Allow.</li>
           </ol>
           <p className="mt-2 text-xs text-muted">No token to copy or store. The connection shows in Active tokens below, marked "Connected with sign-in", and you can revoke it there.</p>
         </div>
@@ -342,7 +342,7 @@ function CreateToken({ sites: loaded, onCreated }: { sites: Site[] | null; onCre
     e.preventDefault();
     setError('');
     const ids = sites.length === 1 ? [sites[0].id] : picked;
-    if (limit && !ids.length) return setError('Pick at least one site, or allow all current and future sites.');
+    if (limit && !ids.length) return setError('Pick at least one website, or allow all current and future websites.');
     setBusy(true);
     try {
       const label = name.trim() || 'Agent';
@@ -405,7 +405,7 @@ function CreateToken({ sites: loaded, onCreated }: { sites: Site[] | null; onCre
         Sites
       </p>
       {!loaded ? (
-        <div className="skeleton h-14 rounded-xl" aria-label="Loading sites" />
+        <div className="skeleton h-14 rounded-xl" aria-label="Loading websites" />
       ) : (
         <>
           <div role="radiogroup" aria-labelledby="sites-label" className="flex flex-wrap gap-2">
@@ -414,7 +414,7 @@ function CreateToken({ sites: loaded, onCreated }: { sites: Site[] | null; onCre
               : sites.length > 1 && choice(limit, 'Only some sites', 'Pick the sites this token may see.', () => setLimit(true))}
             {choice(
               !limit,
-              'All current and future sites',
+              'All current and future websites',
               sites.length ? `${sites.length === 1 ? sites[0].name : `All ${sites.length} sites`} now, and every site you add later.` : 'Every site you add, now or later.',
               () => setLimit(false),
             )}
@@ -528,7 +528,7 @@ function TokenList({
           ))}
         </div>
       )}
-      {state.data?.length === 0 && <EmptyRow>No tokens yet.</EmptyRow>}
+      {state.data?.length === 0 && <EmptyRow>No tokens yet. Create a token above, or connect Claude.ai or ChatGPT with sign-in.</EmptyRow>}
       {!!state.data?.length && (
         <ul>
           {state.data.map((t) => {
@@ -544,14 +544,14 @@ function TokenList({
                   <p className="mt-0.5 text-xs text-muted">
                     {t.oauth_client_id ? 'Renews itself' : <code className="font-mono">{t.prefix}…</code>}
                     {' · '}
-                    {t.site_ids ? t.site_ids.map(siteName).join(', ') : 'All current and future sites'}
+                    {t.site_ids ? t.site_ids.map(siteName).join(', ') : 'All current and future websites'}
                     {' · '}created {fmtAgo(Date.now() - t.created_at)} ago
                   </p>
                 </div>
                 <span className="text-sm text-muted">{t.last_used_at ? `Used ${fmtAgo(Date.now() - t.last_used_at)} ago` : <span className="text-faint">Never used</span>}</span>
                 {confirming === t.id ? (
                   <span className="flex items-center gap-2">
-                    <span className="text-sm">Revoke {t.name}?</span>
+                    <span className="text-sm">Revoke {t.name}? It stops working right away.</span>
                     <Button variant="raw" size="raw" type="button" className="btn-ghost" onClick={() => setConfirming(null)}>
                       Cancel
                     </Button>
@@ -602,7 +602,7 @@ function ActivityLog({
         ))}
       </div>
     );
-  if (!state.data.length) return <EmptyRow>No calls yet.</EmptyRow>;
+  if (!state.data.length) return <EmptyRow>No calls yet. Agent reads and writes appear here after you connect one.</EmptyRow>;
 
   const failed = state.data.filter((r) => !r.ok).length;
   const rows = all ? state.data : state.data.slice(0, LOG_PAGE);

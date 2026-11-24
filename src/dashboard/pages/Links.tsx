@@ -285,9 +285,9 @@ function SiteLinks({ site }: { site: Site }) {
         <section className="card link-empty" aria-labelledby="links-empty">
           <div>
             <h2 id="links-empty" className="text-base font-semibold">
-              See which post pays
+              See which post brings you customers
             </h2>
-            <p className="mt-1 text-sm text-muted">Make a link for each place you share, and its visitors and revenue show up here.</p>
+            <p className="mt-1 text-sm text-muted">Make a link for each place you share: a post, an ad, a newsletter or a QR code on a flyer. Its visitors, customers and revenue show up here.</p>
             <Button variant="raw" size="raw" type="button" className={`btn-dark mt-4 ${TAP}`} onClick={() => setCreating(true)}>
               Make your first link
             </Button>

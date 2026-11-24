@@ -68,7 +68,7 @@ function ConsentForm({ query }: { query: string }) {
     fetch(`/api/oauth/consent${query}`, { credentials: 'same-origin' })
       .then(async (r) => {
         const data: any = await r.json().catch(() => ({}));
-        if (!r.ok) setFatal({ message: data.error ?? 'This connection request is not valid.', redirect: data.redirect ?? null });
+        if (!r.ok) setFatal({ message: data.error ?? 'This connection request is not valid. Start the connection again from your app.', redirect: data.redirect ?? null });
         else setInfo(data as ConsentInfo);
       })
       .catch(() => setFatal({ message: 'Could not load this connection request. Check your connection and reload.', redirect: null }));
@@ -80,7 +80,7 @@ function ConsentForm({ query }: { query: string }) {
   async function decide(allow: boolean) {
     if (!info) return;
     setError('');
-    if (allow && limit && !siteIds.length) return setError('Pick at least one site, or allow all current and future sites.');
+    if (allow && limit && !siteIds.length) return setError('Pick at least one website, or allow all current and future websites.');
     setBusy(allow ? 'allow' : 'deny');
     try {
       const r = await api<{ redirect: string }>('/api/oauth/consent', {
@@ -148,7 +148,7 @@ function ConsentForm({ query }: { query: string }) {
       <p className="label mt-6">It may</p>
       <ul className="well px-4 py-1">
         <Row title="Read your analytics" pill={<span className="pill">Always</span>}>
-          Visitors, sources, revenue, customers, funnels, tracked links, notes and launches.
+          Visitors, sources, revenue, customers, funnels, tagged links, notes and launches.
         </Row>
         <Row title="Never" pill={<span className="pill pill-neg">Admin</span>}>
           Payment keys, API keys, tokens, site settings and deleting data stay with you.
@@ -182,18 +182,18 @@ function ConsentForm({ query }: { query: string }) {
       </p>
       <div role="radiogroup" aria-labelledby="consent-sites" className="grid gap-1.5">
         {info.sites.length === 1 ? (
-          <Choice on={limit} onClick={() => setLimit(true)} title="This site only" desc={`${info.sites[0].name} (${info.sites[0].domain}).`} />
+          <Choice on={limit} onClick={() => setLimit(true)} title="This website only" desc={`${info.sites[0].name} (${info.sites[0].domain}).`} />
         ) : info.sites.length > 1 ? (
-          <Choice on={limit} onClick={() => setLimit(true)} title="Only some sites" desc="Pick the sites this app may see." />
+          <Choice on={limit} onClick={() => setLimit(true)} title="Only some websites" desc="Pick the websites this app may see." />
         ) : null}
         <Choice
           on={!limit}
           onClick={() => setLimit(false)}
-          title="All current and future sites"
+          title="All current and future websites"
           desc={
             info.sites.length
               ? `${info.sites.length === 1 ? info.sites[0].name : `All ${info.sites.length} sites`} now, and every site you add later, without asking again.`
-              : 'You have no sites yet. Every site you add later is included without asking again.'
+              : 'You have no websites yet. Every website you add later is included without asking again.'
           }
         />
       </div>

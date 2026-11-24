@@ -223,7 +223,7 @@ function Live({ onClose, covered }: { onClose: () => void; covered: boolean }) {
               <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 pt-3 sm:px-5">
                 <h2 id="live-map-title" title="Locations are approximate. Lines show arrivals, not network routes." className="flex items-center gap-2 text-sm text-muted">
                   <span className={`h-1.5 w-1.5 rounded-full ${data?.active.visitors === 0 ? 'bg-control' : 'bg-accent'}`} aria-hidden="true" />
-                  {data?.active.visitors === 0 ? 'Nobody on the site in the last 5 minutes' : 'Active visitors'}
+                  {data?.active.visitors === 0 ? 'Nobody on the website in the last 5 minutes' : 'Active visitors'}
                 </h2>
                 <div className="flex items-center gap-1">
                   <Button variant="raw" size="raw" type="button" className="icon-btn" title={copied === 'ok' ? 'Copied' : copied === 'fail' ? "Couldn't copy" : 'Copy snapshot for agent'} aria-label="Copy snapshot for agent" disabled={!data} onClick={copySnapshot}>
@@ -385,12 +385,12 @@ function HereNow({
           ))}
         </div>
       ) : shown.length === 0 ? (
-        <p className="mx-4 mb-4 rounded-[10px] border border-dashed border-control px-3.5 py-3 text-sm text-muted sm:mx-5">Nobody is on the site right now.</p>
+        <p className="mx-4 mb-4 rounded-[10px] border border-dashed border-control px-3.5 py-3 text-sm text-muted sm:mx-5">Nobody is on the website right now.</p>
       ) : (
         <>
           <div className="min-h-0 overflow-y-auto px-4 sm:px-5">
             <table className="data-table table-fixed">
-              <caption className="sr-only">Visitors on the site now, with their current page, source and lifetime spend</caption>
+              <caption className="sr-only">Visitors on the website now, with their current page, source and lifetime spend</caption>
               <thead className="sticky top-0 z-[1] bg-surface">
                 <tr>
                   <th scope="col">Visitor / location</th>
@@ -468,7 +468,7 @@ function Activity({ data, money, selection, onSelect }: { data: Realtime | null;
         {data && data.feed.length > 0 && (
           <ol className="px-2 sm:px-3">
             {data.feed.map((f, i) => {
-              const who = f.visitor_id ? displayName(f.visitor_id, f.name, f.email) : f.name ?? f.email ?? 'A buyer';
+              const who = f.visitor_id ? displayName(f.visitor_id, f.name, f.email) : f.name ?? f.email ?? 'A customer';
               const on = !!selection && ((f.visitor_id && selection.visitorIds.includes(f.visitor_id)) || selection.key === `feed:${f.id}`);
               const where = placeName(f.city, f.country);
               const kind = f.type === 'pageview' ? 'Pageview' : f.type === 'goal' ? 'Goal' : f.type === 'payment' ? 'Payment' : 'Refund';

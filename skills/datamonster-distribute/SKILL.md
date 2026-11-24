@@ -5,13 +5,13 @@ description: Plan ongoing distribution after launch from DataMonster revenue dat
 
 # DataMonster distribute
 
-Launch day is one spike. Distribution is the weekly habit after it: find the places that send **paying** customers, do more there, stop what does not pay, and measure every post. This skill reads where revenue comes from, proposes a short weekly plan with the owner, tags every post before it goes out, and checks the results a week later. It needs the DataMonster MCP tools; making links and notes needs the **write** scope (a token created with `--write`, or an app connection where the owner allowed write). If the tools are not connected, use the `datamonster-setup` skill.
+Launch day is one spike. Distribution is the weekly habit after it: find the places that send **paying** customers, do more there, stop what does not pay, and measure every post. This skill reads where revenue comes from, proposes a short weekly plan with the owner, tags every post before it goes out, and checks the results a week later. It needs the DataMonster MCP tools; making links and notes needs the **write** scope (a Read and write token created on the Agents page, or an app connection where the owner allowed write). If the tools are not connected, use the `datamonster-setup` skill.
 
 Related skills: submitting to launch sites and directories (Product Hunt, Show HN, BetaList and the like) is the `datamonster-launch` skill (the list is `list_directories`, or `<worker-url>/directories.json`); general questions about the numbers are `datamonster-analyst`; adding `?ref=` links and goals in code is `datamonster-instrument`.
 
 ## Hard stops (read first)
 
-You analyse, plan and draft. **The human writes, posts and talks to people.** Never do any of these, even if asked to "just handle distribution":
+You analyze, plan and draft. **The human writes, posts and talks to people.** Never do any of these, even if asked to "just handle distribution":
 
 - **Never post, comment, reply, vote, send a DM or send an email** on the owner's behalf, on any site, through any tool or browser. You may draft a post in chat; the owner rewrites it in their own voice and publishes it themselves.
 - **Never create accounts**, and never use or ask for the owner's logins, cookies or API keys for any community, social network or newsletter.
@@ -31,7 +31,7 @@ Start with `list_sites` for the `site_id` (skip it if the token sees one site). 
 1. `get_overview` with `period: "30d"`, then `"90d"`: revenue, customers, conversion rate and revenue per visitor for the whole site, against the previous period. This is the baseline every channel is compared to.
 2. `get_breakdown` with `dimension: "channel"` (Direct, Organic Search, Organic Social, AI, Referral, Email, Paid), then `"source"` (X, Reddit, Google, ChatGPT, a newsletter's domain...), for both windows. Use `limit: 50` so small sources are not cut off.
 3. `get_breakdown` with `dimension: "ref"` for tagged links, `"campaign"` (`utm_campaign`) and `"utm_source"` if the owner uses UTM, and `"referrer"` to see the exact referring pages behind a big source.
-4. `get_breakdown` with `dimension: "entry_page"` to see which landing pages (blog posts, comparison or how-to pages) bring buyers in. That is the evidence for SEO and content work.
+4. `get_breakdown` with `dimension: "entry_page"` to see which landing pages (blog posts, comparison or how-to pages) bring customers in. That is the evidence for SEO and content work.
 5. `list_links` with `period: "30d"` and `"90d"`: visitors, customers and revenue per tagged link the owner already shared.
 6. `list_placements` (default period `all`) for what each launch and directory listing brought since it went up.
 7. `list_annotations` for the 90-day window, so a spike is explained by what the owner noted ("Posted in r/SaaS", "Newsletter feature") rather than guessed.

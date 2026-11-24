@@ -1,11 +1,11 @@
 ---
 name: datamonster-launch
-description: Plan a product launch and track it in DataMonster. Use when the user wants to launch or relaunch a product, submit it to Product Hunt, Hacker News, BetaList, directories or newsletters, record where it is listed, check that listings are still live, or see which launch paid off. Records each place with add_placement, tags links with create_link, verifies listings and reads revenue per launch.
+description: Plan a product launch and track it in DataMonster. Use when the user wants to launch or relaunch a product, submit it to Product Hunt, Hacker News, BetaList, directories or newsletters, record where it is listed, check that listings are still live, or see which launch brought customers. Records each place with add_placement, tags links with create_link, verifies listings and reads revenue per launch.
 ---
 
 # DataMonster launch
 
-A launch is only worth repeating if you know which one paid. This skill plans the launch with the owner, records every place in DataMonster as a **placement** (the tool name; the dashboard calls it a *launch*), keeps its status current, and reports visitors and revenue per launch. It needs the DataMonster MCP tools with the **write** scope (a token created with `--write`, or an app connection where the owner allowed write). If the tools are not connected, use the `datamonster-setup` skill; for reading numbers in general, use `datamonster-analyst`.
+A launch is only worth repeating if you know which one brought customers. This skill plans the launch with the owner, records every place in DataMonster as a **placement** (the tool name; the dashboard calls it a *launch*), keeps its status current, and reports visitors and revenue per launch. It needs the DataMonster MCP tools with the **write** scope (a Read and write token created on the Agents page, or an app connection where the owner allowed write). If the tools are not connected, use the `datamonster-setup` skill; for reading numbers in general, use `datamonster-analyst`.
 
 ## Hard stops (read first)
 
@@ -42,7 +42,7 @@ create_link { site_id, ref: "ph-launch", path: "/", label: "Product Hunt launch"
 - Give the owner the returned `url` to use as the website link in that listing. Calling again with the same `ref` and `path` returns the same link.
 - Use it in the listing itself, in the maker comment and anywhere the owner posts about that launch.
 
-Many directories strip referrers or send everyone through a redirect, so the ref link is what makes the numbers reliable.
+Many directories strip referrers or send everyone through a redirect, so the tagged link is what makes the numbers reliable.
 
 ## 3. Record each placement
 
@@ -93,4 +93,4 @@ Answer in the usual way: the figure, the period, the comparison. "Product Hunt b
 
 ## Finish
 
-Summarize in a few lines: the places recorded and each one's status, the tagged links the owner should use, what the human still has to do themselves (create accounts, pay, solve CAPTCHAs, press submit), and when to check back ("ask me in a week which launch paid off"). Say what you could not check.
+Summarize in a few lines: the places recorded and each one's status, the tagged links the owner should use, what the human still has to do themselves (create accounts, pay, solve CAPTCHAs, press submit), and when to check back ("ask me in a week which launch brought customers"). Say what you could not check.

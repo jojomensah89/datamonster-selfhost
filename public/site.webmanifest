@@ -1,7 +1,7 @@
 {
   "name": "DataMonster",
   "short_name": "DataMonster",
-  "description": "Revenue-first web analytics for indie makers.",
+  "description": "Website analytics for any business. See which post, ad, launch or link brought you customers, and what they spent.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -28,7 +28,7 @@ export function Login({ onLogin }: { onLogin: () => void }) {
       <form onSubmit={submit} className="anim-sheet w-full max-w-sm rounded-2xl border border-sheetEdge bg-surface p-8">
         <Logo />
         <h1 className="mt-8 text-2xl font-semibold tracking-[-0.01em]">Sign in</h1>
-        <p className="mt-1 text-muted">See which post, page or AI chat made you money.</p>
+        <p className="mt-1 text-muted">See which post, ad or link brought you customers.</p>
         <label className="label mt-6" htmlFor="pw">
           Password
         </label>

@@ -93,7 +93,7 @@ describe('OverviewCard annotations UI', () => {
     expect(await screen.findByText('Raised prices')).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: 'Note' }));
-    fireEvent.change(screen.getByPlaceholderText('Launched on Product Hunt'), { target: { value: 'Shipped v2' } });
+    fireEvent.change(screen.getByPlaceholderText('Started the spring sale'), { target: { value: 'Shipped v2' } });
     fireEvent.click(screen.getByRole('button', { name: 'Save note' }));
 
     expect(await screen.findByText('Shipped v2')).toBeTruthy();

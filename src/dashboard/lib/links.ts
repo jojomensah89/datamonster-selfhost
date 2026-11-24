@@ -24,6 +24,8 @@ export interface Place {
   medium: string;
 }
 export const PLACES: Place[] = [
+  { label: 'Instagram', source: 'instagram', medium: 'social' },
+  { label: 'Facebook', source: 'facebook', medium: 'social' },
   { label: 'X / Twitter', source: 'x', medium: 'social' },
   { label: 'LinkedIn', source: 'linkedin', medium: 'social' },
   { label: 'Reddit', source: 'reddit', medium: 'social' },
