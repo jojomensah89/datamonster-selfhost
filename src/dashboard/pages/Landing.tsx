@@ -3,10 +3,12 @@ import { Button } from '../components/primitives/button';
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from 'react';
 import { CloudflareMark } from '../components/CloudflareMark';
 import { GoogleMark } from '../components/GoogleMark';
-import { SpikeCharacter, type SpikeMood, type SpikeTrigger } from '../components/SpikeCharacter';
+import { SpikeCharacter, type SpikeTrigger } from '../components/SpikeCharacter';
 import '../landing/landing.css';
 import { SIGN_IN_URL, SiteFooter, SiteNav, usePlan } from '../landing/SiteChrome';
 import { useGlyphField } from '../landing/useGlyphField';
+import { AskScene, MatchScene, NotesScene, PlaceScene, PlinthScene, RouteScene, SwitchScene } from '../landing/scenes';
+import '../landing/lines.css';
 import { useLightOnly } from '../lib/theme';
 import type { PlanInfo } from '../lib/api';
 
@@ -300,103 +302,84 @@ function Hero({ error, hosted, live }: { error: string | null; hosted: boolean; 
   );
 }
 
-/** The signature move: the questions people ask it, travelling across the page. */
-function Marquee() {
-  const line = (
-    <span className="marquee-line">
-      {ASK_LABELS.map((l) => (
-        <span key={l}>
-          {l}
-          <i className="marquee-dot" />
-        </span>
-      ))}
-    </span>
-  );
+/** The drawing is the chart: one plate for every $100 a source brought in. Same example figures as the hero card. */
+function Routes() {
+  const [on, setOn] = useState(0);
+  const [live, setLive] = useState(false);
+  const [touched, setTouched] = useState(false);
+  // Goes round the sources by itself until someone picks one.
+  useEffect(() => {
+    if (!live || touched || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const t = window.setInterval(() => setOn((i) => (i + 1) % SOURCES.length), 4200);
+    return () => window.clearInterval(t);
+  }, [live, touched]);
+  const choose = (i: number) => {
+    setTouched(true);
+    setOn(i);
+  };
   return (
-    <div className="wrap">
-      <div className="marquee" aria-hidden="true">
-        <div className="marquee-track">
-          {line}
-          {line}
+    <section className="sec" id="how" aria-labelledby="how-h">
+      <div className="wrap">
+        <div className="ln-head">
+          <h2 className="h2 rise" id="how-h">From post to payment</h2>
+          <p className="rise" style={stagger(1)}>Add one line of code and connect your payments. DataMonster links sales to the visits that brought them.</p>
+        </div>
+        <div className="ln-pair ln-pair--route">
+          <div className="ln-plate rise" style={stagger(1)}>
+            <RouteScene active={on} live={live} onLive={setLive} onPick={choose} />
+          </div>
+          <div className="ln-plate ln-list rise" style={stagger(2)} role="group" aria-label="Example: revenue by source, last 30 days" onFocusCapture={() => setTouched(true)}>
+            {SOURCES.map((r, i) => (
+              <Button key={r.name} variant="raw" size="raw" type="button" className="ln-row ln-src" aria-pressed={i === on} onClick={() => choose(i)} onPointerEnter={(e) => e.pointerType === 'mouse' && choose(i)}>
+                <span className="ln-src-top">
+                  <b>{r.name}</b>
+                  <b>{r.revenue}</b>
+                </span>
+                <span>{r.note}</span>
+              </Button>
+            ))}
+            <p className="ln-key">
+              <i aria-hidden="true" /> One plate is about $100. Example figures.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
-/** One navy plate, the hero's twin: the questions on the left, the conversation as a window on the right. */
+/** One navy plate: a drawing for the question, the answer under it, the questions beside it. */
 function Ask() {
   const { shown, selected, out, pick } = useSwap(0, 120);
-  const [askMood, setAskMood] = useState<SpikeMood>('idle');
-  const [askTrigger, setAskTrigger] = useState<SpikeTrigger | null>(null);
-  const askSeq = useRef(0);
-  const thinkTimer = useRef(0);
-  const settleTimer = useRef(0);
   const s = ASKS[shown];
-
-  useEffect(
-    () => () => {
-      window.clearTimeout(thinkTimer.current);
-      window.clearTimeout(settleTimer.current);
-    },
-    [],
-  );
-
-  const choose = (i: number) => {
-    if (i === selected) return;
-    pick(i);
-    window.clearTimeout(thinkTimer.current);
-    window.clearTimeout(settleTimer.current);
-    setAskMood('think');
-    thinkTimer.current = window.setTimeout(() => {
-      setAskMood('happy');
-      setAskTrigger({ kind: 'happy', key: ++askSeq.current });
-      settleTimer.current = window.setTimeout(() => setAskMood('idle'), 1200);
-    }, 560);
-  };
-
+  const [mate, setMate] = useState<SpikeTrigger | null>(null);
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) first.current = false;
+    else setMate((m) => ({ kind: 'happy', key: (m?.key ?? 0) + 1 }));
+  }, [shown]);
   return (
     <section className="sec" id="ask" aria-labelledby="ask-h">
       <div className="wrap">
-        <div className="ask-plate">
-          <div className="ask-list">
-            <h2 id="ask-h" className="h2 rise">Ask in plain words</h2>
-            <p className="ask-lede rise" style={stagger(1)}>Connect Claude, ChatGPT, Codex or Cursor and ask about your own numbers.</p>
-            <div role="tablist" aria-label="Questions you can ask" className="ask-qs rise" style={stagger(2)}>
+        <div className="ln-ask">
+          <div className="ln-ask-left">
+            <h2 className="h2 rise" id="ask-h">Ask in plain words</h2>
+            <p className="ln-ask-lede rise" style={stagger(1)}>Connect Claude, ChatGPT, Codex or Cursor and ask about your own numbers.</p>
+            <div className="ln-qs rise" style={stagger(2)} role="tablist" aria-label="Example questions" aria-orientation="vertical">
               {ASK_LABELS.map((label, i) => (
-                <Button variant="raw" size="raw"
-                  key={label}
-                  className="ask-q"
-                  role="tab"
-                  id={`ask-tab-${i}`}
-                  aria-selected={i === selected}
-                  aria-controls="ask-panel"
-                  onClick={() => choose(i)}
-                  onFocus={() => choose(i)}
-                >
+                <Button key={label} variant="raw" size="raw" type="button" role="tab" className="ln-row ln-q" id={`ask-tab-${i}`} aria-selected={i === selected} aria-controls="ask-panel" onClick={() => pick(i)} onFocus={() => pick(i)}>
                   {label}
                 </Button>
               ))}
             </div>
           </div>
-          <div className="ask-window rise" style={stagger(2)}>
-            <SpikeCharacter
-              size={200}
-              className="ask-spike"
-              mood={askMood}
-              gaze={askMood === 'think' ? { x: -0.7, y: 0.55 } : null}
-              trackPointer
-              allowClickHop
-              trigger={askTrigger}
-            />
-            <div className="chat-card" data-ui role="tabpanel" id="ask-panel" aria-labelledby={`ask-tab-${selected}`} aria-live="polite">
-              <div className="chat-bar">
-                <span className="chat-dot" />
-                Your AI assistant, with DataMonster connected
-              </div>
-              <div className={`chat${out ? ' out' : ''}`}>
-                <p className="bubble me">{s.q}</p>
-                <p className="bubble it">{s.a}</p>
+          <div className={`ln-ask-right rise${out ? ' is-out' : ''}`} style={stagger(2)} role="tabpanel" id="ask-panel" aria-labelledby={`ask-tab-${selected}`} aria-live="polite">
+            <AskScene i={shown} />
+            <div className="ln-ask-say">
+              <SpikeCharacter size={84} className="ask-mate" mood={out ? 'think' : 'idle'} trigger={mate} trackPointer allowClickHop />
+              <div>
+                <p className="ln-ask-q">{s.q}</p>
+                <p className="ln-ask-a">{s.a}</p>
               </div>
             </div>
           </div>
@@ -406,83 +389,58 @@ function Ask() {
   );
 }
 
-/** Three bands of different weight: the two big proofs, three controls, and the privacy and payment facts on one strip. */
+const CONTROL: [string, string][] = [
+  ['Look only, until you say so', 'AI assistants cannot change anything until you allow it.'],
+  ['Everything is logged', 'See what each assistant read or changed.'],
+  ['Disconnect in one click', 'Its access ends right away.'],
+  ['Never your payment keys', 'It can never see them, and it can never delete anything.'],
+];
+const PRIVATE: [string, string][] = [
+  ['No exact locations', "A visitor's location is rounded to about 1 km."],
+  ['Never sold', 'Your numbers are not sold or used for advertising.'],
+  ['Stripe, Polar, Dodo', 'Or send payments from your own system.'],
+];
+
+function Rows({ rows }: { rows: [string, string][] }) {
+  return (
+    <ul className="ln-plate ln-list">
+      {rows.map(([h, p]) => (
+        <li key={h} className="ln-row">
+          <h3>{h}</h3>
+          <p>{p}</p>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Control, matching and notes, privacy: a drawing for each, with what it means beside it. */
 function Features() {
-  const [ownTrigger, setOwnTrigger] = useState<SpikeTrigger | null>(null);
   return (
     <section className="sec" id="features" aria-labelledby="feat-h">
       <div className="wrap">
-        <div className="feat-head">
-          <h2 className="h2 rise" id="feat-h">See what works</h2>
-          <p className="rise" style={stagger(1)}>Connect your payments and see where paying customers came from. Let an AI assistant look too, on your terms.</p>
+        <div className="ln-head">
+          <h2 className="h2 rise" id="feat-h">See what works, on your terms</h2>
         </div>
-
-        <div className="feat-row feat-row--big">
-          <article className="feat feat--blue rise" style={stagger(1)}>
-            <div className="feat-copy">
-              <h3>You stay in control</h3>
-              <p>See what each AI assistant read or changed, and disconnect it in one click.</p>
-            </div>
-            <div className="log-card" data-ui>
-              <div><span>09:12</span><span>Claude</span><code>Created a tagged link</code><span>instagram-bio</span></div>
-              <div><span>09:12</span><span>Claude</span><code>Read a breakdown</code><span>source, 30d</span></div>
-              <div><span>Mon 08:00</span><span>ChatGPT</span><code>Read customers</code><span>7d</span></div>
-              <div><span>Sun 22:40</span><span>Codex</span><code>Added a note</code><span>Raised prices</span></div>
-              <div><span>Sun 22:39</span><span>Codex</span><code>Read the overview</code><span>7d</span></div>
-            </div>
+        <div className="ln-pair rise" style={stagger(1)}>
+          <div className="ln-plate ln-plate--sky ln-fig"><SwitchScene /></div>
+          <Rows rows={CONTROL} />
+        </div>
+        <div className="ln-pair ln-pair--even rise" style={stagger(1)}>
+          <article className="ln-plate ln-card">
+            <MatchScene />
+            <h3>Honest matching</h3>
+            <p>Each payment says how it was linked to a visitor, or that it wasn't.</p>
           </article>
-          <article className="feat feat--navy feat--fig rise" style={stagger(2)}>
-            <p className="fig" data-ui>$860</p>
-            <div className="feat-copy">
-              <h3>Customers and revenue per link</h3>
-              <p>The newsletter brought 14 customers. Nine other links sent visitors and no sales.</p>
-            </div>
+          <article className="ln-plate ln-card">
+            <NotesScene />
+            <h3>Timeline notes</h3>
+            <p>Mark promotions, launches and price changes right on the chart.</p>
           </article>
         </div>
-
-        <div className="feat-row feat-row--three">
-          <article className="feat feat--sky rise" style={stagger(1)}>
-            <div className="chip" data-ui>Make changes <span className="toggle" /></div>
-            <div className="feat-copy">
-              <h3>Your permission first</h3>
-              <p>AI assistants can only look, until you allow changes.</p>
-            </div>
-          </article>
-          <article className="feat feat--light rise" style={stagger(2)}>
-            <div className="chip chip--status" data-ui>Matched: return page</div>
-            <div className="feat-copy">
-              <h3>Honest matching</h3>
-              <p>Each payment says how it was linked to a visitor, or that it wasn't.</p>
-            </div>
-          </article>
-          <article className="feat feat--ink rise" style={stagger(3)}>
-            <div className="tg-card" data-ui>
-              <b>Timeline note · Nov 12</b>Raised prices. Sales held steady.
-            </div>
-            <div className="feat-copy">
-              <h3>Timeline notes</h3>
-              <p>Mark promotions, launches and price changes right on the chart.</p>
-            </div>
-          </article>
-        </div>
-
-        <div
-          className="own-strip rise"
-          onPointerEnter={(e) => e.pointerType === 'mouse' && setOwnTrigger((t) => ({ kind: 'greet', key: (t?.key ?? 0) + 1 }))}
-        >
-          <SpikeCharacter size={120} className="own-spike" energy={1} trigger={ownTrigger} allowClickHop />
-          <div>
-            <h3>No exact locations</h3>
-            <p>A visitor's location is rounded to about 1 km.</p>
-          </div>
-          <div>
-            <h3>Never sold</h3>
-            <p>Your numbers are not sold or used for advertising.</p>
-          </div>
-          <div>
-            <h3>Stripe, Polar, Dodo</h3>
-            <p>Or send payments from your own system.</p>
-          </div>
+        <div className="ln-pair ln-pair--flip rise" style={stagger(1)}>
+          <Rows rows={PRIVATE} />
+          <div className="ln-plate ln-plate--navy ln-fig"><PlaceScene /></div>
         </div>
       </div>
     </section>
@@ -605,14 +563,17 @@ function Faq() {
       <div className="wrap faq">
         <div className="faq-side" ref={sideRef}>
           <h2 id="faq-h" className="h2 rise">Questions</h2>
-          <SpikeCharacter
-            size={160}
-            className="faq-spike"
-            mood={openQ ? 'look' : 'idle'}
-            gaze={faqGaze}
-            trigger={faqTrigger}
-            allowClickHop
-          />
+          <div className="ln-plinth">
+            <PlinthScene />
+            <SpikeCharacter
+              size={160}
+              className="faq-spike"
+              mood={openQ ? 'look' : 'idle'}
+              gaze={faqGaze}
+              trigger={faqTrigger}
+              allowClickHop
+            />
+          </div>
         </div>
         <Accordion
           type="single"
@@ -664,7 +625,7 @@ export function Landing() {
     <div className="lp" ref={root}>
       <Hero error={error} hosted={!!plan?.hosted} live={isLive(plan)} />
       <main>
-        <Marquee />
+        <Routes />
         <Ask />
         <Features />
         <Pricing plan={plan} />

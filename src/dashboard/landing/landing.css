@@ -1,7 +1,7 @@
 /* DataMonster landing page in the brand's cobalt, navy and white, with Spike (the mascot, a revenue spike with eyes)
    as the one cut-out shape. The hero keeps its poster type (Anton over Work Sans); every section below it is set in
-   Geist on one small scale: section heading, card title, body, small, plus one display size for the marquee and
-   the footer name.
+   Geist on one small scale: section heading, card title, body, small, plus one display size for the footer
+   name. The line drawings between the hero and the footer are in lines.css.
    Everything is scoped under .lp so it never reaches the dashboard. Colliding names are prefixed
    (.lp-btn: the app has a global .btn; .lp-grow: Tailwind has a `grow` utility).
    The page is always light (useLightOnly), so it defines one set of colours. */
@@ -49,7 +49,7 @@
   --fs-body: 1.0625rem;                                     /* 17px: running text */
   --fs-title: clamp(1.1875rem, 1.1rem + 0.35vw, 1.375rem);  /* 19-22px: card titles, questions */
   --fs-h2: clamp(2.25rem, 1.7rem + 2.2vw, 3.5rem);          /* 36-56px: section headings, prices */
-  --fs-display: clamp(3rem, 1.6rem + 5vw, 6.5rem);          /* the marquee and the footer name */
+  --fs-display: clamp(3rem, 1.6rem + 5vw, 6.5rem);          /* the footer name */
   --step-lead: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);    /* hero only */
   --measure: 65ch;
 
@@ -192,78 +192,6 @@
 .lp .sec { padding-top: var(--section); }
 .lp .h2 + p, .lp .lede { margin-top: 16px; max-width: 48ch; }
 
-/* ---------- the marquee: the questions, travelling, on an ink band stacked under the hero plate */
-.lp .marquee { margin-top: 12px; overflow: hidden; border-radius: var(--plate-r); background: var(--ink); color: #fff; padding-block: clamp(18px, 2vw, 28px); font-size: var(--fs-display); font-weight: 600; letter-spacing: -0.045em; line-height: 1.1; }
-.lp .marquee-track { display: flex; width: max-content; animation: lp-marquee 60s linear infinite; }
-.lp .marquee:hover .marquee-track { animation-play-state: paused; }
-.lp .marquee-line { display: flex; flex: none; }
-.lp .marquee-line > span { display: inline-flex; align-items: center; white-space: nowrap; }
-.lp .marquee-dot { display: inline-block; width: 0.18em; height: 0.18em; margin: 0 0.5em; border-radius: 50%; background: var(--blue); }
-@keyframes lp-marquee { to { transform: translateX(-50%); } }
-
-/* ---------- ask your agent: a navy plate, questions left, the conversation as a window right */
-.lp .ask-plate {
-  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 5vw, 80px); align-items: end;
-  padding: var(--plate-pad); border-radius: var(--plate-r); background: var(--navy); color: #fff; overflow: hidden;
-}
-.lp .ask-list .h2 { color: #fff; }
-.lp .ask-lede { margin-top: 16px; max-width: 40ch; color: #c5cee3; }
-.lp .ask-qs { margin-top: 40px; display: grid; gap: 6px; }
-.lp .ask-q {
-  width: 100%; text-align: left; padding: 14px 18px; border-radius: 14px;
-  font-size: var(--fs-title); font-weight: 500; line-height: 1.35; letter-spacing: -0.015em; color: #c5cee3;
-  transition: background-color 200ms var(--ease), color 200ms var(--ease), transform 160ms var(--ease);
-}
-.lp .ask-q:active { transform: scale(0.99); }
-@media (hover: hover) and (pointer: fine) { .lp .ask-q:hover { background: rgba(255, 255, 255, 0.08); color: #fff; } }
-.lp .ask-q[aria-selected='true'] { background: #fff; color: var(--ink); font-weight: 600; }
-.lp .ask-window { position: relative; padding-top: 120px; }
-.lp .ask-spike { position: absolute; z-index: 0; right: 10%; top: 120px; width: clamp(110px, 12vw, 180px); height: auto; color: var(--sky); transform: translateY(-80%) rotate(7deg); }
-.lp .chat-card { position: relative; z-index: 1; background: #fff; color: var(--ink); border-radius: 20px; padding: 20px; min-height: 280px; display: flex; flex-direction: column; }
-.lp .chat-bar { display: flex; align-items: center; gap: 8px; padding: 2px 4px 16px; font-size: var(--fs-small); font-weight: 500; color: var(--muted); }
-.lp .chat-dot { width: 8px; height: 8px; border-radius: 50%; background: #12b76a; }
-.lp .chat { display: grid; gap: 14px; margin-top: auto; }
-.lp .bubble { max-width: 88%; padding: 16px 20px; border-radius: 18px; font-size: var(--fs-body); line-height: 1.5; }
-.lp .bubble.me { justify-self: end; background: var(--ground-2); color: var(--ink); border-bottom-right-radius: 4px; font-weight: 500; }
-.lp .bubble.it { justify-self: start; background: var(--blue); color: #fff; border-bottom-left-radius: 4px; font-size: var(--fs-title); line-height: 1.45; letter-spacing: -0.01em; }
-.lp .chat .bubble { transition: opacity 220ms var(--ease), transform 220ms var(--ease), filter 220ms var(--ease); }
-.lp .chat .bubble.it { transition-delay: 60ms; }
-.lp .chat.out .bubble { opacity: 0; transform: translateY(6px); filter: blur(2px); transition-duration: 120ms; transition-delay: 0ms; }
-
-/* ---------- built for agents: two big proofs, three controls, one ownership strip */
-.lp .feat-head { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px; align-items: end; margin-bottom: 40px; }
-.lp .feat-head p { margin: 0; color: var(--muted); max-width: 44ch; }
-.lp .feat-row { display: grid; gap: 12px; margin-top: 12px; }
-.lp .feat-row--big { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
-.lp .feat-row--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.lp .feat { display: flex; flex-direction: column; gap: 32px; min-height: 300px; padding: clamp(24px, 2.6vw, 36px); border-radius: 24px; overflow: hidden; }
-.lp .feat-row--big .feat { min-height: 420px; }
-.lp .feat h3 { font-size: var(--fs-title); font-weight: 600; line-height: 1.3; letter-spacing: -0.02em; }
-.lp .feat-copy p { margin-top: 6px; max-width: 40ch; font-size: var(--fs-small); line-height: 1.55; }
-.lp .feat--blue { background: var(--blue); color: #fff; }
-.lp .feat--navy { background: var(--navy); color: #fff; }
-.lp .feat--ink { background: var(--ink); color: #fff; }
-.lp .feat--sky { background: var(--sky); color: var(--ink); }
-.lp .feat--light { background: var(--ground-2); color: var(--ink); }
-.lp .feat--blue .feat-copy p, .lp .feat--navy .feat-copy p, .lp .feat--ink .feat-copy p { color: #d7def0; }
-.lp .feat--sky .feat-copy p, .lp .feat--light .feat-copy p { color: var(--muted); }
-.lp .feat .feat-copy:last-child { margin-top: auto; }
-.lp .log-card { margin-top: auto; margin-right: calc(-1 * clamp(24px, 2.6vw, 36px) - 24px); background: #fff; color: var(--ink); border-radius: 16px; padding: 18px 20px; display: grid; gap: 9px; font-size: var(--fs-small); overflow: hidden; }
-.lp .log-card div { display: flex; gap: 16px; white-space: nowrap; }
-.lp .log-card div span:first-child { color: var(--muted); min-width: 72px; }
-.lp .log-card code { color: var(--blue); font-weight: 500; }
-.lp .fig { font-size: var(--fs-display); font-weight: 600; letter-spacing: -0.05em; line-height: 0.9; font-variant-numeric: tabular-nums; }
-.lp .chip { align-self: flex-start; display: inline-flex; align-items: center; gap: 0.5em; padding: 12px 18px; border-radius: 14px; background: #fff; color: var(--ink); font-size: var(--fs-title); font-weight: 600; letter-spacing: -0.02em; white-space: nowrap; }
-.lp .toggle { width: 2.4em; height: 1.4em; border-radius: 1em; background: var(--blue); position: relative; }
-.lp .toggle::after { content: ''; position: absolute; top: 0.15em; right: 0.15em; width: 1.1em; height: 1.1em; border-radius: 50%; background: #fff; }
-.lp .chip--status::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: #12b76a; }
-.lp .tg-card { background: #fff; color: var(--ink); border-radius: 14px; padding: 14px 16px; font-size: var(--fs-small); line-height: 1.5; }
-.lp .tg-card b { display: block; color: var(--blue); margin-bottom: 4px; }
-.lp .own-strip { margin-top: 12px; display: grid; grid-template-columns: auto repeat(3, minmax(0, 1fr)); gap: 32px; align-items: center; padding: clamp(24px, 2.6vw, 36px); border-radius: 24px; background: var(--sky); }
-.lp .own-strip h3 { font-size: var(--fs-title); font-weight: 600; letter-spacing: -0.02em; line-height: 1.3; }
-.lp .own-strip p { margin-top: 4px; font-size: var(--fs-small); color: var(--muted); }
-.lp .own-spike { width: clamp(64px, 6vw, 96px); height: auto; color: var(--blue); transform: rotate(-6deg); }
-
 /* ---------- pricing: one cobalt plate, like the hero */
 .lp .price-plate { display: grid; gap: 40px; padding: var(--plate-pad); border-radius: var(--plate-r); background: var(--blue); color: #fff; }
 .lp .price-head { display: grid; gap: 16px; }
@@ -291,22 +219,16 @@
 /* ---------- faq: the heading and Spike hold the left, the questions run on the right */
 .lp .faq { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 32px; align-items: start; }
 .lp .faq-side { position: sticky; top: 48px; }
-.lp .faq-spike { display: block; margin-top: 40px; width: clamp(96px, 9vw, 140px); height: auto; color: var(--blue); transform: rotate(-6deg); }
-.lp .qs { display: grid; gap: 8px; }
-.lp .qs .faq-item { background: var(--ground-2); border-radius: 18px; overflow: hidden; transition: background-color 220ms var(--ease), color 220ms var(--ease); }
-.lp .qs .faq-item[data-state="open"] { background: var(--ink); color: #fff; }
-.lp .qs .faq-trigger { width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; gap: 24px; min-height: 76px; padding: 20px 28px; font-size: var(--fs-title); font-weight: 500; line-height: 1.35; letter-spacing: -0.02em; cursor: pointer; transition: background-color 160ms ease; }
+.lp .faq-spike { display: block; height: auto; color: var(--blue); }
+.lp .qs { display: grid; }
+.lp .qs .faq-trigger { width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; gap: 24px; min-height: 76px; padding: 22px 0; font-size: var(--fs-title); font-weight: 500; line-height: 1.35; letter-spacing: -0.02em; cursor: pointer; transition: background-color 160ms ease; }
 .lp .plus { position: relative; width: 16px; height: 16px; flex: none; }
 .lp .plus::before, .lp .plus::after { content: ''; position: absolute; left: 0; top: 6.5px; width: 16px; height: 3px; border-radius: 2px; background: currentColor; transition: transform 220ms var(--ease); }
 .lp .plus::after { transform: rotate(90deg); }
 .lp .faq-item[data-state="open"] .plus::after { transform: rotate(0); }
 .lp .qs .faq-item[data-state="open"] .a { animation: lp-swapin 220ms var(--ease) both; }
-.lp .qs .a { padding: 0 28px 28px; max-width: var(--measure); color: #d7def0; }
+.lp .qs .a { max-width: var(--measure); }
 @keyframes lp-swapin { from { opacity: 0; transform: translateY(10px); } }
-@media (hover: hover) and (pointer: fine) { .lp .qs .faq-trigger:hover { background: rgba(31, 84, 240, 0.08); } }
-.lp .qs .faq-item[data-state="open"] .faq-trigger:hover { background: transparent; }
-
-/* ---------- the closing call */
 
 /* ---------- footer: a cobalt plate that closes the page with Spike and the name */
 .lp .foot { padding: 12px 0 var(--margin); }
@@ -331,11 +253,9 @@
 @media (prefers-reduced-motion: reduce) {
   .lp .rise { opacity: 1 !important; transform: none !important; transition: none !important; }
   .lp .plate .glyphs, .lp .hero-spike { animation: none !important; }
-  .lp .marquee-track { animation: none; transform: translateX(-8%); }
   .lp .row, .lp .row .fill { transition: none; }
   .lp .lp-live::before { animation: none; }
   .lp .qs .faq-item[data-state="open"] .a { animation: none; }
-  .lp .chat .bubble { transition: opacity 150ms ease !important; transform: none !important; filter: none !important; }
 }
 
 /* ---------- tablet */
@@ -349,14 +269,8 @@
   .lp .hero-copy { margin-top: 140px; }
   .lp .hero-card { max-width: 560px; justify-self: end; width: 100%; }
   .lp .login-error { max-width: 60%; }
-  .lp .ask-plate { grid-template-columns: minmax(0, 1fr); }
-  .lp .feat-row--three { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .lp .feat-row--three .feat:last-child { grid-column: span 2; }
-  .lp .own-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .lp .own-spike { display: none; }
   .lp .faq { grid-template-columns: 1fr; }
   .lp .faq-side { position: static; display: flex; align-items: flex-end; justify-content: space-between; }
-  .lp .faq-spike { margin-top: 0; }
   .lp .foot-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
@@ -382,22 +296,8 @@
   .lp .kpi strong { font-size: 18px; }
   .lp .kpi em { display: block; margin-left: 0; }
   .lp .rows-head, .lp .row { grid-template-columns: 20px minmax(0, 1fr) 52px 58px; gap: 8px; }
-  .lp .marquee { font-size: 2.5rem; }
-  .lp .ask-q { padding: 12px 14px; }
-  .lp .ask-window { padding-top: 88px; }
-  .lp .ask-spike { width: 104px; right: 8%; top: 88px; }
-  .lp .chat-card { min-height: 0; padding: 14px; }
-  .lp .bubble { max-width: 94%; }
-  .lp .feat-head { grid-template-columns: 1fr; gap: 16px; }
-  .lp .feat-row--big, .lp .feat-row--three { grid-template-columns: 1fr; }
-  .lp .feat-row--three .feat:last-child { grid-column: auto; }
-  .lp .feat, .lp .feat-row--big .feat { min-height: 0; gap: 24px; }
-  .lp .feat--fig { min-height: 260px; }
-  .lp .fig { font-size: 4.5rem; }
-  .lp .own-strip { grid-template-columns: 1fr; gap: 20px; }
   .lp .price-plate { gap: 32px; }
-  .lp .qs .faq-trigger { min-height: 64px; padding: 16px 20px; }
-  .lp .qs .a { padding: 0 20px 20px; }
+  .lp .qs .faq-trigger { min-height: 64px; padding: 16px 0; }
   .lp .foot-word { font-size: 11vw; }
   .lp .foot-spike { width: 10vw; }
 }
