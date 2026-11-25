@@ -45,7 +45,7 @@ To stop counting your own visits, open https://yoursite.com/?dm_ignore=true once
 
 ## Launch directories
 
-- A plain list of places to launch, no token needed: ${origin}/directories.json or ${origin}/directories.md (optional search and category). Also the list_directories tool.
+- Places to launch: the list_directories tool. It reads the public list at https://submitmystartup.com/, which needs no token: https://submitmystartup.com/api/v1/directories.json
 
 ## Authentication
 

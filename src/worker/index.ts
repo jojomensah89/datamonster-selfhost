@@ -1,5 +1,5 @@
 import { readCards, storeCards } from '../shared/dashboardCards';
-import { mountDirectories } from './directories';
+import { DIRECTORIES_LIST, DIRECTORIES_SITE } from '../agent/directories';
 import { Hono, type Context, type Next } from 'hono';
 import { cors } from 'hono/cors';
 import { handleEvent } from './collect';
@@ -387,7 +387,9 @@ app.get('/api/sites/:id/funnels/:fid/stats', async (c) => {
 });
 
 // DataMonster agent layer: agent API, MCP server, agent tokens and audit log (src/agent).
-mountDirectories(app);
+// Our own list of launch directories gave way to the public one others maintain. Old links still lead somewhere.
+app.on('GET', ['/directories', '/directories/', '/directories.md'], (c) => c.redirect(DIRECTORIES_SITE));
+app.get('/directories.json', (c) => c.redirect(DIRECTORIES_LIST));
 mountAgent(app);
 mountProviders(app);
 

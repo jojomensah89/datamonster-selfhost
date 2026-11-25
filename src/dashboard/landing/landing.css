@@ -109,11 +109,9 @@
 .lp .spike-icon { color: var(--blue); }
 
 /* ---------- nav: a plain bar on the white ground */
-.lp.lp-chrome { min-height: 0; }
 .lp .nav { position: relative; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 24px; height: 80px; }
 .lp .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.125rem; letter-spacing: -0.01em; white-space: nowrap; }
 .lp .nav-links { display: flex; align-items: center; gap: 36px; font-size: 15px; font-weight: 500; }
-.lp .nav-minimal-links { display: flex; align-items: center; gap: 24px; font-size: 15px; font-weight: 500; }
 .lp .nav-end { display: flex; align-items: center; gap: 28px; font-size: 15px; font-weight: 500; }
 .lp .nav a:not(.lp-btn) { position: relative; padding: 6px 0; white-space: nowrap; }
 .lp .nav a:not(.lp-btn)::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--blue); transform: scaleX(0); transform-origin: left; transition: transform 220ms var(--ease); }
@@ -121,11 +119,6 @@
 .lp .nav a[aria-current='page']::after { transform: scaleX(1); }
 @media (hover: hover) and (pointer: fine) { .lp .nav a:not(.lp-btn):hover::after { transform: scaleX(1); } }
 .lp .nav .lp-btn { height: 44px; padding: 0 20px; font-size: 15px; }
-.lp .nav-menu-btn { display: none; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid rgba(10, 22, 51, 0.2); background: #ffffff; color: var(--ink); font-size: 14px; font-weight: 500; }
-.lp .mobile-nav { border-top: 1px solid rgba(10, 22, 51, 0.12); padding: 8px 0 12px; }
-.lp .mobile-nav ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 8px; }
-.lp .mobile-nav a { display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; font-size: 15px; font-weight: 500; color: var(--ink); }
-.lp .mobile-nav a[aria-current='page'] { background: var(--ground-2); color: #1642c4; font-weight: 600; }
 .lp .login-error { position: relative; z-index: 3; margin-bottom: 12px; max-width: 40%; padding: 12px 16px; border-radius: 12px; background: #fdecec; color: #8f1b1f; font-size: 15px; }
 
 /* ---------- hero: one cobalt plate holding the glyph map, the copy and the example card */
@@ -372,7 +365,6 @@
   .lp { --plate-pad: 20px; }
   .lp .nav { min-height: 68px; gap: 12px; }
   .lp .nav-links { display: none; }
-  .lp .nav-menu-btn { display: inline-flex; }
   .lp .nav-end { gap: 8px; }
   .lp .nav .lp-btn { padding: 0 16px; font-size: 14px; }
   .lp .login-error { max-width: none; }

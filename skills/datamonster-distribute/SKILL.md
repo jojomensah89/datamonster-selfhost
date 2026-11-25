@@ -7,7 +7,7 @@ description: Plan ongoing distribution after launch from DataMonster revenue dat
 
 Launch day is one spike. Distribution is the weekly habit after it: find the places that send **paying** customers, do more there, stop what does not pay, and measure every post. This skill reads where revenue comes from, proposes a short weekly plan with the owner, tags every post before it goes out, and checks the results a week later. It needs the DataMonster MCP tools; making links and notes needs the **write** scope (a Read and write token created on the Agents page, or an app connection where the owner allowed write). If the tools are not connected, use the `datamonster-setup` skill.
 
-Related skills: submitting to launch sites and directories (Product Hunt, Show HN, BetaList and the like) is the `datamonster-launch` skill (the list is `list_directories`, or `<worker-url>/directories.json`); general questions about the numbers are `datamonster-analyst`; adding `?ref=` links and goals in code is `datamonster-instrument`.
+Related skills: submitting to launch sites and directories (Product Hunt, Show HN, BetaList and the like) is the `datamonster-launch` skill (the list is `list_directories`); general questions about the numbers are `datamonster-analyst`; adding `?ref=` links and goals in code is `datamonster-instrument`.
 
 ## Hard stops (read first)
 

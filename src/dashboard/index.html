@@ -12,17 +12,16 @@
       // Theme before first paint (lib/theme.ts keeps it in step afterwards): the stored choice, else the system's.
       // The marketing landing page at "/" (signed out) is always light, so "/" turns dark only for a signed-in app.
       (function () {
-        var d = document.documentElement, t = 'light', landing, directories;
+        var d = document.documentElement, t = 'light', landing;
         try {
           var p = localStorage.getItem('dm_theme');
           landing = location.pathname === '/' && !localStorage.getItem('dm_app');
-          directories = /^\/directories(\/|$)/.test(location.pathname);
-          if (!landing && !directories) t = p === 'dark' || p === 'light' ? p : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          if (!landing) t = p === 'dark' || p === 'light' ? p : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         } catch (e) {}
         d.setAttribute('data-theme', t);
         // With scripts on, people see the logo while the app loads. If the app's script fails, the plain text comes back.
         d.classList.add('js');
-        if (landing || directories) d.classList.add('splash-white');
+        if (landing) d.classList.add('splash-white');
         addEventListener('error', function (e) {
           if (e.target && e.target.type === 'module') d.classList.remove('js');
         }, true);

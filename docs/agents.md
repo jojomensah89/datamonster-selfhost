@@ -121,7 +121,7 @@ curl -H "Authorization: Bearer $DATAMONSTER_TOKEN" "$DATAMONSTER_URL/api/agent/v
 | `get_guide` | read | How to use the tools and read attribution |
 | `create_link` | write | Make a tagged link for a post, launch or newsletter |
 | `add_annotation` | write | Mark a day with a note |
-| `list_directories` | read | A plain list of places to launch; also public at `/directories.json` and `/directories.md` |
+| `list_directories` | read | Places to launch, with cost and what each asks for, from the public list at [submitmystartup.com](https://submitmystartup.com/) |
 | `add_placement`, `update_placement` | write | Record a launch and move it along |
 | `verify_placement` | write | Check a launch's listing page now |
 | `get_online_widget` | write | Read the public online widget's settings and snippet |

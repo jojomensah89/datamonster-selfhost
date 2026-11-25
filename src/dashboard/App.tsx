@@ -1,4 +1,4 @@
-import { Suspense, createContext, lazy, useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
 import { AppShell } from './components/AppShell';
 import { NotFound } from './components/NotFound';
 import { api, type Me } from './lib/api';
@@ -13,9 +13,7 @@ import { Links } from './pages/Links';
 import { Login } from './pages/Login';
 import { Settings } from './pages/Settings';
 import { Sites } from './pages/Sites';
-import { syncTheme, useLightOnly } from './lib/theme';
-
-const Directories = lazy(() => import('./pages/Directories').then((m) => ({ default: m.Directories })));
+import { syncTheme } from './lib/theme';
 
 export function navigate(to: string, { replace = false }: { replace?: boolean } = {}) {
   // A replaced entry keeps its state, so a page opened from a bookmark still knows there is no in-app page behind it.
@@ -44,10 +42,6 @@ const LEGAL_META = {
   refund: { title: 'Refund Policy | DataMonster', description: 'How refunds work for DataMonster, including the 14-day money-back guarantee.' },
 };
 const LEGAL = /^\/(terms|privacy|refund)\/?$/;
-const DIRECTORIES_ROUTE = /^\/directories\/?$/;
-const DIRECTORIES_TITLE = 'Launch directories | DataMonster';
-const DIRECTORIES_DESCRIPTION =
-  'A list of places to launch your product, for you and your agent.';
 const APP_PAGE = /^\/(agents\/?|launches\/?|links\/?|billing(\/.*)?|site\/[\w-]+(\/settings)?\/?)$/;
 
 function setTag(selector: string, create: () => HTMLElement, attr: string, value: string) {
@@ -64,29 +58,19 @@ const meta = (name: string) => () => Object.assign(document.createElement('meta'
 function usePageMeta(path: string) {
   useEffect(() => {
     const legal = LEGAL.exec(path)?.[1] as keyof typeof LEGAL_META | undefined;
-    const dirs = DIRECTORIES_ROUTE.test(path);
     // Self-hosted copies are private dashboards: only datamonster.dev itself should be in search results.
-    const indexable = /(^|\.)datamonster\.dev$/.test(window.location.hostname) && (path === '/' || !!legal || dirs);
-    document.title = legal ? LEGAL_META[legal].title : dirs ? DIRECTORIES_TITLE : path === '/' ? HOME_TITLE : 'DataMonster';
+    const indexable = /(^|\.)datamonster\.dev$/.test(window.location.hostname) && (path === '/' || !!legal);
+    document.title = legal ? LEGAL_META[legal].title : path === '/' ? HOME_TITLE : 'DataMonster';
     setTag(
       'meta[name="description"]',
       meta('description'),
       'content',
-      legal ? LEGAL_META[legal].description : dirs ? DIRECTORIES_DESCRIPTION : HOME_DESCRIPTION,
+      legal ? LEGAL_META[legal].description : HOME_DESCRIPTION,
     );
     setTag('meta[name="robots"]', meta('robots'), 'content', indexable ? 'index, follow, max-image-preview:large' : 'noindex');
-    const canonicalPath = legal ? `/${legal}` : dirs ? '/directories' : '/';
+    const canonicalPath = legal ? `/${legal}` : '/';
     setTag('link[rel="canonical"]', () => Object.assign(document.createElement('link'), { rel: 'canonical' }), 'href', SITE + canonicalPath);
   }, [path]);
-}
-
-function DirectoriesRoute({ me }: { me: Me }) {
-  useLightOnly();
-  return (
-    <Suspense fallback={<div className="min-h-svh bg-white" />}>
-      <Directories hosted={me.hosted} loggedIn={me.loggedIn} supportEmail={me.supportEmail ?? null} />
-    </Suspense>
-  );
 }
 
 const MeContext = createContext<{ me: Me; refresh: () => Promise<Me> } | null>(null);
@@ -144,8 +128,6 @@ export function App() {
 
   const legal = LEGAL.exec(path);
   if (legal) return <Legal page={legal[1] as 'terms' | 'privacy' | 'refund'} />;
-
-  if (DIRECTORIES_ROUTE.test(path)) return <DirectoriesRoute me={me} />;
 
   if (/^\/oauth\/consent\/?$/.test(path)) return <Consent me={me} onLogin={refresh} />;
   if (path !== '/' && !APP_PAGE.test(path)) return <NotFound />;

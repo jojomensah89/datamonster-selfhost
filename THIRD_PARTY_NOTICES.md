@@ -69,4 +69,4 @@ SOFTWARE.
 
 ## Launch directories list
 
-- Names, addresses and categories in `src/shared/directories.json` come from the **OpenLaunch** platform registry (https://github.com/Securiteru/openlaunch), MIT License, Copyright (c) 2026 OpenLaunch contributors.
+- `list_directories` reads, and keeps a trimmed copy of, **Where to Submit Your Startup** (https://github.com/mmmmingos/where-to-submit-your-startup, https://submitmystartup.com), MIT License, Copyright (c) 2026 mmmmingos. The MIT permission notice above applies to it, with that copyright line.

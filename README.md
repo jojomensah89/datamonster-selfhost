@@ -23,7 +23,7 @@ delete data.
 - **What they did.** Pages, entry pages, outbound clicks, button clicks, custom goals and funnels.
 - **Who paid.** Every customer with their source, amount, time to convert and full visitor timeline. Payments come from Stripe, Dodo Payments, Polar or your own backend.
 - **Launches.** Record where you launched (Product Hunt, a directory, a newsletter), see the visitors and revenue each one brought, and get a daily check that the listing is still up. See [docs/launches.md](docs/launches.md).
-- **Launch directories.** A plain list of places to launch at `/directories`, and for agents at `/directories.json` and `/directories.md`.
+- **Launch directories.** Agents can list places to launch, from a [free public list](https://submitmystartup.com/) others maintain.
 - **Tagged links and annotations.** One `?ref=` link per post, made and compared on the **Links** page, and notes on the timeline ("raised prices") so jumps and drops can be explained.
 - **Live globe** (press `M`): visitors on your site right now, with a live feed of page views, goals and payments. Click any row to filter the whole dashboard; multiple websites, one login.
 
@@ -128,7 +128,7 @@ scope. Amounts are integers in minor units; every result carries a `money` block
 | `list_links` | read | What each tagged link (`?ref=`) brought in: visitors, customers, revenue |
 | `list_annotations` | read | Notes left on days (launches, price changes, outages) to explain jumps and drops |
 | `list_placements` | read | Each launch with status, last listing check, visitors, customers and revenue; `needs_attention` marks a live listing that disappeared |
-| `list_directories` | read | A plain list of places to launch or get listed |
+| `list_directories` | read | Places to launch or get listed, with cost and what each asks for |
 | `get_guide` | read | How to use the tools, read attribution and stay safe (topics `start`, `attribution`, `questions`, `safety`) |
 | `create_link` | write | Makes a `?ref=` tagged link for a post, launch or newsletter and returns the URL to share |
 | `add_annotation` | write | Marks a day on the timeline with a short note |

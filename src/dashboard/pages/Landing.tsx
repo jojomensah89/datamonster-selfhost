@@ -212,7 +212,7 @@ function Hero({ error, hosted, live }: { error: string | null; hosted: boolean; 
 
   return (
     <header className="hero">
-      <SiteNav page="landing" error={error} hosted={hosted} />
+      <SiteNav error={error} hosted={hosted} />
       <div className="wrap">
         <div className="plate" ref={stageRef}>
           <canvas className="glyphs" ref={canvasRef} aria-hidden="true" />
@@ -670,7 +670,7 @@ export function Landing() {
         <Pricing plan={plan} />
         <Faq />
       </main>
-      <SiteFooter page="landing" hosted={!!plan?.hosted} supportEmail={plan?.supportEmail ?? null} />
+      <SiteFooter supportEmail={plan?.supportEmail ?? null} />
     </div>
   );
 }

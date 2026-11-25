@@ -9,7 +9,7 @@ const get = (path: string) => app.request(`https://install.test${path}`, {}, env
 
 describe('link previews', () => {
   it('point at the install that serves the page', async () => {
-    for (const path of ['/', '/terms', '/directories', '/?ref=x']) {
+    for (const path of ['/', '/terms', '/?ref=x']) {
       const r = await get(path);
       const html = await r.text();
       expect([r.status, r.headers.get('ETag'), r.headers.get('X-Frame-Options'), r.headers.has('X-Robots-Tag')]).toEqual([200, null, 'DENY', false]);

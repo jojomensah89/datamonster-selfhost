@@ -25,7 +25,7 @@ Never ask for or write secrets (tokens, passwords, webhook secrets) in chat or i
 ## 1. Plan the launch with the owner
 
 1. `list_sites` for the `site_id` (skip it if the token sees one site) and `list_placements` to see what is already recorded. Do not duplicate a place that exists; a name is unique per site and adding it again returns the existing one.
-2. Ask what the product is, who it is for, and the date they want to launch. Agree a short list of places that fit: the main launch site (Product Hunt, Hacker News Show HN), a few relevant directories, and any newsletters or communities the owner is **already** part of. Quality over quantity: 3 to 5 at a time. For places to choose from, call `list_directories`, or fetch `<worker-url>/directories.json`. It is only a list, so read each site's own rules and prices first.
+2. Ask what the product is, who it is for, and the date they want to launch. Agree a short list of places that fit: the main launch site (Product Hunt, Hacker News Show HN), a few relevant directories, and any newsletters or communities the owner is **already** part of. Quality over quantity: 3 to 5 at a time. For places to choose from, call `list_directories`, with `cost` or `kind` to narrow it. Product Hunt and Show HN are not on it. Read each site's own rules and prices first.
 3. For each place, note its rules and what it needs (account, tagline length, images, fee). Show the owner the list and let them cut it.
 4. Make a **tagged link per place** (below) so each launch can be measured precisely.
 5. `add_annotation` on the launch day ("Launched on Product Hunt") once it happens, so later jumps in traffic and revenue can be explained.

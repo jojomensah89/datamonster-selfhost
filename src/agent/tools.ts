@@ -1,4 +1,4 @@
-import { CATEGORY_LABEL, DIRECTORY_NOTE, filterDirectories } from '../shared/directories';
+import { COSTS, KINDS, listDirectories } from './directories';
 export { WRITE_CAPABILITIES } from './write-capabilities';
 import type { Env, Site } from '../worker/env';
 import { currencyDecimals } from '../worker/payments';
@@ -125,19 +125,21 @@ export const TOOLS: Tool[] = [
   {
     name: 'list_directories',
     title: 'Launch directories',
-    description: "A plain list of places to launch a product: name, address and category. Needs no site. Check each site's own rules and prices, and leave accounts, fees, CAPTCHAs and the final submit to the owner.",
+    description: "Places to launch a product: name, address, kind, cost and what each asks for, from a public list others maintain. Needs no site. Check each site's own rules and prices, and leave accounts, fees, CAPTCHAs and the final submit to the owner.",
     scope: 'read',
     input: {
       type: 'object',
       additionalProperties: false,
       properties: {
         search: { type: 'string', maxLength: 100, description: 'Part of a name or address' },
-        category: { type: 'string', enum: Object.keys(CATEGORY_LABEL) },
+        kind: { type: 'string', enum: KINDS },
+        cost: { type: 'string', enum: COSTS },
+        limit: { type: 'integer', minimum: 1, maximum: 200, description: 'Default 50. total says how many match.' },
       },
     },
-    async run(args) {
-      const directories = filterDirectories({ search: typeof args.search === 'string' ? args.search : undefined, category: typeof args.category === 'string' ? args.category : undefined });
-      return { directories, note: DIRECTORY_NOTE };
+    run(args, t) {
+      const text = (v: unknown) => (typeof v === 'string' ? v : undefined);
+      return listDirectories(t.db, { search: text(args.search), kind: text(args.kind), cost: text(args.cost), limit: clampInt(args.limit, 50, 1, 200) });
     },
   },
   ...['enable_online_widget', 'get_online_widget'].map((name): Tool => ({
