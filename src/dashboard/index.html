@@ -12,18 +12,34 @@
       // Theme before first paint (lib/theme.ts keeps it in step afterwards): the stored choice, else the system's.
       // The marketing landing page at "/" (signed out) is always light, so "/" turns dark only for a signed-in app.
       (function () {
-        var d = document.documentElement, t = 'light';
+        var d = document.documentElement, t = 'light', landing, directories;
         try {
           var p = localStorage.getItem('dm_theme');
-          var landing = location.pathname === '/' && !localStorage.getItem('dm_app');
-          var directories = /^\/directories(\/|$)/.test(location.pathname);
+          landing = location.pathname === '/' && !localStorage.getItem('dm_app');
+          directories = /^\/directories(\/|$)/.test(location.pathname);
           if (!landing && !directories) t = p === 'dark' || p === 'light' ? p : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         } catch (e) {}
         d.setAttribute('data-theme', t);
+        // With scripts on, people see the logo while the app loads. If the app's script fails, the plain text comes back.
+        d.classList.add('js');
+        if (landing || directories) d.classList.add('splash-white');
+        addEventListener('error', function (e) {
+          if (e.target && e.target.type === 'module') d.classList.remove('js');
+        }, true);
         d.style.colorScheme = t;
         if (t === 'dark') document.querySelector('meta[name="theme-color"]').setAttribute('content', '#131312');
       })();
     </script>
+    <style>
+      #splash { display: none; }
+      .js #root > #plain { display: none; }
+      .js #splash { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: #efede8; color: #1f54f0; }
+      .js.splash-white #splash { background: #fff; }
+      .js[data-theme='dark'] #splash { background: #131312; color: #5580ff; }
+      /* A quick load never flashes the logo. */
+      #splash svg { animation: splash-in 200ms ease-out 150ms both; }
+      @keyframes splash-in { from { opacity: 0; } }
+    </style>
 
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -75,12 +91,18 @@
     </script>
   </head>
   <body>
-    <!-- Shown to crawlers and before JS runs; React replaces it on first render. -->
+    <!-- For crawlers and browsers without scripts; React replaces it on first render. Same words as the landing page's hero. -->
     <div id="root">
-      <main style="max-width: 42rem; margin: 4rem auto; padding: 0 1rem; text-align: center; font-family: system-ui, sans-serif">
+      <main id="plain" style="max-width: 42rem; margin: 4rem auto; padding: 0 1rem; text-align: center; font-family: system-ui, sans-serif">
         <h1>Know which post brought you customers</h1>
         <p>Website analytics for any business. See what brings in sales: a post, an ad, Google or a launch.</p>
       </main>
+    </div>
+    <!-- App.tsx removes it once it knows which page to show. -->
+    <div id="splash" role="status" aria-label="Loading DataMonster">
+      <svg aria-hidden="true" width="56" height="56" viewBox="923.2 231.2 217.6 217.6">
+        <path fill="currentColor" fill-rule="evenodd" d="M1018 265Q1024 255 1030 265L1052.5 312.5C1080 317 1100 329 1108.5 356C1118 382 1117 403 1097 415.5H978C961 415.5 956.5 402 956.5 381C956.5 359 964 342 977 325ZM990.5 354Q990.5 340 1004.5 340Q1018.5 340 1018.5 354V367.5Q1018.5 381.5 1004.5 381.5Q990.5 381.5 990.5 367.5ZM1038.5 349Q1038.5 336.5 1054 336.5Q1070 336.5 1070 350V363Q1070 374.5 1055.5 374.5Q1038.5 374.5 1038.5 363Z" />
+      </svg>
     </div>
     <script type="module" src="./main.tsx"></script>
   </body>

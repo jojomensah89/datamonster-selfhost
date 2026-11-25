@@ -1,12 +1,29 @@
+import { useState } from 'react';
 import { Logo } from './Logo';
+import { SpikeCharacter } from './SpikeCharacter';
 
 export function NotFound() {
+  const [homeHot, setHomeHot] = useState(false);
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
       <Logo />
-      <h1 className="mt-8 text-2xl font-semibold tracking-[-0.01em]">Page not found</h1>
+      <SpikeCharacter
+        size={140}
+        mood={homeHot ? 'look' : 'sad'}
+        gaze={homeHot ? { x: 0, y: 0.7 } : null}
+        allowClickHop
+        className="mt-8"
+      />
+      <h1 className="mt-6 text-2xl font-semibold tracking-[-0.01em]">Page not found</h1>
       <p className="mt-2 text-muted">This page doesn&apos;t exist or has moved.</p>
-      <a href="/" className="btn-dark mt-6">
+      <a
+        href="/"
+        className="btn-dark mt-6"
+        onPointerEnter={(e) => e.pointerType === 'mouse' && setHomeHot(true)}
+        onPointerLeave={() => setHomeHot(false)}
+        onFocus={() => setHomeHot(true)}
+        onBlur={() => setHomeHot(false)}
+      >
         Go to DataMonster
       </a>
     </div>

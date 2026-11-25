@@ -1,9 +1,9 @@
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '../components/primitives/accordion';
 import { Button } from '../components/primitives/button';
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from 'react';
 import { CloudflareMark } from '../components/CloudflareMark';
 import { GoogleMark } from '../components/GoogleMark';
-import { Spike } from '../components/Spike';
+import { SpikeCharacter, type SpikeMood, type SpikeTrigger } from '../components/SpikeCharacter';
 import '../landing/landing.css';
 import { SIGN_IN_URL, SiteFooter, SiteNav, usePlan } from '../landing/SiteChrome';
 import { useGlyphField } from '../landing/useGlyphField';
@@ -157,7 +157,58 @@ function Hero({ error, hosted, live }: { error: string | null; hosted: boolean; 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
   const [row, setRow] = useState(0);
+  const [ctaHot, setCtaHot] = useState(false);
+  const [heroTrigger, setHeroTrigger] = useState<SpikeTrigger | null>(null);
+  const triggerSeq = useRef(0);
+  const ctaHotRef = useRef(false);
+  ctaHotRef.current = ctaHot;
   useGlyphField(stageRef, canvasRef, mapRef);
+
+  // Occasionally duck behind the example card and peek back up while the hero is on screen.
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let visible = true;
+    let timer = 0;
+
+    const schedule = () => {
+      window.clearTimeout(timer);
+      if (!visible || document.visibilityState === 'hidden') return;
+      timer = window.setTimeout(() => {
+        if (visible && document.visibilityState !== 'hidden' && !ctaHotRef.current) {
+          setHeroTrigger({ kind: 'peek', key: ++triggerSeq.current });
+        }
+        schedule();
+      }, 11_000 + Math.round(Math.random() * 5_000));
+    };
+
+    const io = new IntersectionObserver(([entry]) => {
+      visible = entry ? entry.isIntersecting : true;
+      if (visible) schedule();
+      else window.clearTimeout(timer);
+    });
+    io.observe(stage);
+
+    const onVis = () => {
+      if (document.visibilityState === 'hidden') window.clearTimeout(timer);
+      else schedule();
+    };
+    document.addEventListener('visibilitychange', onVis);
+    schedule();
+
+    return () => {
+      window.clearTimeout(timer);
+      io.disconnect();
+      document.removeEventListener('visibilitychange', onVis);
+    };
+  }, []);
+
+  const ctaEvents = {
+    onPointerEnter: (e: React.PointerEvent) => e.pointerType === 'mouse' && setCtaHot(true),
+    onPointerLeave: () => setCtaHot(false),
+    onFocus: () => setCtaHot(true),
+    onBlur: () => setCtaHot(false),
+  };
 
   return (
     <header className="hero">
@@ -175,12 +226,12 @@ function Hero({ error, hosted, live }: { error: string | null; hosted: boolean; 
             </p>
             <div className="hero-actions rise" style={stagger(2)}>
               {live ? (
-                <a className="lp-btn lp-btn--light" href={SIGN_IN_URL} data-dm-goal="signup_click" data-dm-goal-location="hero">
+                <a className="lp-btn lp-btn--light" href={SIGN_IN_URL} data-dm-goal="signup_click" data-dm-goal-location="hero" {...ctaEvents}>
                   <GoogleMark size={20} />
                   Continue with Google
                 </a>
               ) : (
-                <a className="lp-btn lp-btn--light" href="#pricing" data-dm-goal="pricing_cta" data-dm-goal-location="hero">
+                <a className="lp-btn lp-btn--light" href="#pricing" data-dm-goal="pricing_cta" data-dm-goal-location="hero" {...ctaEvents}>
                   See pricing
                 </a>
               )}
@@ -189,7 +240,15 @@ function Hero({ error, hosted, live }: { error: string | null; hosted: boolean; 
           </div>
 
           <div className="hero-card rise" style={stagger(3)}>
-            <Spike size={220} className="hero-spike" />
+            <SpikeCharacter
+              size={220}
+              className="hero-spike"
+              mood={ctaHot ? 'happy' : 'idle'}
+              energy={2}
+              trackPointer
+              allowClickHop
+              trigger={heroTrigger}
+            />
             <div className="panel" data-ui role="group" aria-label="Example: revenue by source, last 30 days">
               <div className="panel-head">
                 <span className="panel-title">
@@ -268,7 +327,33 @@ function Marquee() {
 /** One navy plate, the hero's twin: the questions on the left, the conversation as a window on the right. */
 function Ask() {
   const { shown, selected, out, pick } = useSwap(0, 120);
+  const [askMood, setAskMood] = useState<SpikeMood>('idle');
+  const [askTrigger, setAskTrigger] = useState<SpikeTrigger | null>(null);
+  const askSeq = useRef(0);
+  const thinkTimer = useRef(0);
+  const settleTimer = useRef(0);
   const s = ASKS[shown];
+
+  useEffect(
+    () => () => {
+      window.clearTimeout(thinkTimer.current);
+      window.clearTimeout(settleTimer.current);
+    },
+    [],
+  );
+
+  const choose = (i: number) => {
+    if (i === selected) return;
+    pick(i);
+    window.clearTimeout(thinkTimer.current);
+    window.clearTimeout(settleTimer.current);
+    setAskMood('think');
+    thinkTimer.current = window.setTimeout(() => {
+      setAskMood('happy');
+      setAskTrigger({ kind: 'happy', key: ++askSeq.current });
+      settleTimer.current = window.setTimeout(() => setAskMood('idle'), 1200);
+    }, 560);
+  };
 
   return (
     <section className="sec" id="ask" aria-labelledby="ask-h">
@@ -286,8 +371,8 @@ function Ask() {
                   id={`ask-tab-${i}`}
                   aria-selected={i === selected}
                   aria-controls="ask-panel"
-                  onClick={() => pick(i)}
-                  onFocus={() => pick(i)}
+                  onClick={() => choose(i)}
+                  onFocus={() => choose(i)}
                 >
                   {label}
                 </Button>
@@ -295,7 +380,15 @@ function Ask() {
             </div>
           </div>
           <div className="ask-window rise" style={stagger(2)}>
-            <Spike size={200} className="ask-spike" />
+            <SpikeCharacter
+              size={200}
+              className="ask-spike"
+              mood={askMood}
+              gaze={askMood === 'think' ? { x: -0.7, y: 0.55 } : null}
+              trackPointer
+              allowClickHop
+              trigger={askTrigger}
+            />
             <div className="chat-card" data-ui role="tabpanel" id="ask-panel" aria-labelledby={`ask-tab-${selected}`} aria-live="polite">
               <div className="chat-bar">
                 <span className="chat-dot" />
@@ -315,6 +408,7 @@ function Ask() {
 
 /** Three bands of different weight: the two big proofs, three controls, and the privacy and payment facts on one strip. */
 function Features() {
+  const [ownTrigger, setOwnTrigger] = useState<SpikeTrigger | null>(null);
   return (
     <section className="sec" id="features" aria-labelledby="feat-h">
       <div className="wrap">
@@ -372,8 +466,11 @@ function Features() {
           </article>
         </div>
 
-        <div className="own-strip rise">
-          <Spike size={120} className="own-spike" />
+        <div
+          className="own-strip rise"
+          onPointerEnter={(e) => e.pointerType === 'mouse' && setOwnTrigger((t) => ({ kind: 'greet', key: (t?.key ?? 0) + 1 }))}
+        >
+          <SpikeCharacter size={120} className="own-spike" energy={1} trigger={ownTrigger} allowClickHop />
           <div>
             <h3>No exact locations</h3>
             <p>A visitor's location is rounded to about 1 km.</p>
@@ -394,6 +491,17 @@ function Features() {
 
 /** Three plans on one cobalt field, like the hero. Spike grows with the plan. */
 function Pricing({ plan }: { plan: PlanInfo | null }) {
+  const [planTriggers, setPlanTriggers] = useState<Record<string, SpikeTrigger>>({});
+  const seq = useRef(0);
+
+  const energyFor = (size: number): 1 | 2 | 3 => (size >= 80 ? 3 : size >= 64 ? 2 : 1);
+  // Once per visit to a card, so nothing keeps bouncing beside a list being read.
+  const activate = (name: string, energy: 1 | 2 | 3) => {
+    const kind = energy === 3 ? 'celebrate' : energy === 2 ? 'happy' : 'greet';
+    const key = ++seq.current;
+    setPlanTriggers((prev) => ({ ...prev, [name]: { kind, key } }));
+  };
+
   return (
     <section className="sec" id="pricing" aria-labelledby="price-h">
       <div className="wrap">
@@ -403,37 +511,53 @@ function Pricing({ plan }: { plan: PlanInfo | null }) {
             <p className="rise" style={stagger(1)}>Start free. Grow for {(isLive(plan) && plan?.price) || HOSTED_PRICE} a month, or run your own copy.</p>
           </div>
           <div className="plan-grid">
-            {plansFor(plan).map((pl, i) => (
-              <article key={pl.name} className="plan-card rise" style={stagger(i + 2)} aria-labelledby={`plan-${i}`}>
-                <h3 id={`plan-${i}`}>{pl.name}</h3>
-                <div className="plan-top">
-                  <p className="plan-price">
-                    <strong>{pl.price}</strong> <span>{pl.per}</span>
-                  </p>
-                  <Spike size={pl.size} className="plan-spike" />
-                </div>
-                <ul className="plan-list">
-                  {pl.list.map((t, k) => (
-                    <li key={t} className={k < pl.lead ? 'lead' : undefined}>{t}</li>
-                  ))}
-                </ul>
-                <div className="plan-action">
-                  {pl.btn && !pl.href && (
-                    <span className="lp-btn lp-btn--big lp-btn--soon" aria-disabled="true">
-                      {pl.mark && <span className="g-chip"><CloudflareMark /></span>}
-                      {pl.btn}
-                    </span>
-                  )}
-                  {pl.href && (
-                    <a className="lp-btn lp-btn--big" href={pl.href} data-dm-goal="pricing_cta" data-dm-goal-location={pl.name.toLowerCase()} {...(pl.mark === 'cloudflare' ? { target: '_blank', rel: 'noreferrer' } : {})}>
-                      {pl.mark && <span className="g-chip">{pl.mark === 'google' ? <GoogleMark size={20} /> : <CloudflareMark />}</span>}
-                      {pl.btn}
-                    </a>
-                  )}
-                  <p className="plan-note">{pl.note}</p>
-                </div>
-              </article>
-            ))}
+            {plansFor(plan).map((pl, i) => {
+              const energy = energyFor(pl.size);
+              return (
+                <article
+                  key={pl.name}
+                  className="plan-card rise"
+                  style={stagger(i + 2)}
+                  aria-labelledby={`plan-${i}`}
+                  onPointerEnter={(e) => e.pointerType === 'mouse' && activate(pl.name, energy)}
+                  onFocus={(e) => e.target.matches(':focus-visible') && activate(pl.name, energy)}
+                >
+                  <h3 id={`plan-${i}`}>{pl.name}</h3>
+                  <div className="plan-top">
+                    <p className="plan-price">
+                      <strong>{pl.price}</strong> <span>{pl.per}</span>
+                    </p>
+                    <SpikeCharacter
+                      size={pl.size}
+                      className="plan-spike"
+                      energy={energy}
+                      trigger={planTriggers[pl.name] ?? null}
+                      allowClickHop
+                    />
+                  </div>
+                  <ul className="plan-list">
+                    {pl.list.map((t, k) => (
+                      <li key={t} className={k < pl.lead ? 'lead' : undefined}>{t}</li>
+                    ))}
+                  </ul>
+                  <div className="plan-action">
+                    {pl.btn && !pl.href && (
+                      <span className="lp-btn lp-btn--big lp-btn--soon" aria-disabled="true">
+                        {pl.mark && <span className="g-chip"><CloudflareMark /></span>}
+                        {pl.btn}
+                      </span>
+                    )}
+                    {pl.href && (
+                      <a className="lp-btn lp-btn--big" href={pl.href} data-dm-goal="pricing_cta" data-dm-goal-location={pl.name.toLowerCase()} {...(pl.mark === 'cloudflare' ? { target: '_blank', rel: 'noreferrer' } : {})}>
+                        {pl.mark && <span className="g-chip">{pl.mark === 'google' ? <GoogleMark size={20} /> : <CloudflareMark />}</span>}
+                        {pl.btn}
+                      </a>
+                    )}
+                    <p className="plan-note">{pl.note}</p>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -442,16 +566,75 @@ function Pricing({ plan }: { plan: PlanInfo | null }) {
 }
 
 function Faq() {
+  const [openQ, setOpenQ] = useState<string>(FAQ[0][0]);
+  const [faqGaze, setFaqGaze] = useState<{ x: number; y: number } | null>({ x: 0.85, y: -0.35 });
+  const [faqTrigger, setFaqTrigger] = useState<SpikeTrigger | null>(null);
+  const nodSeq = useRef(0);
+  const sideRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef(new Map<string, HTMLDivElement | null>());
+
+  const aimAt = useCallback((question: string) => {
+    if (!question) {
+      setFaqGaze(null);
+      return;
+    }
+    const sideEl = sideRef.current;
+    const itemEl = itemRefs.current.get(question);
+    if (!sideEl || !itemEl) {
+      const idx = FAQ.findIndex(([q]) => q === question);
+      const y = idx < 0 ? 0 : (idx / Math.max(1, FAQ.length - 1)) * 1.4 - 0.6;
+      setFaqGaze({ x: 0.85, y: Math.max(-0.85, Math.min(0.85, y)) });
+      return;
+    }
+    const spikeEl = sideEl.querySelector('.faq-spike') ?? sideEl;
+    const sr = spikeEl.getBoundingClientRect();
+    const ir = itemEl.getBoundingClientRect();
+    const dx = ir.left + Math.min(ir.width * 0.25, 140) - (sr.left + sr.width * 0.5);
+    const dy = ir.top + Math.min(ir.height * 0.4, 44) - (sr.top + sr.height * 0.5);
+    const dist = Math.hypot(dx, dy) || 1;
+    setFaqGaze({ x: (dx / dist) * 0.9, y: (dy / dist) * 0.9 });
+  }, []);
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => aimAt(openQ));
+    return () => cancelAnimationFrame(raf);
+  }, [openQ, aimAt]);
+
   return (
     <section className="sec" id="faq" aria-labelledby="faq-h">
       <div className="wrap faq">
-        <div className="faq-side">
+        <div className="faq-side" ref={sideRef}>
           <h2 id="faq-h" className="h2 rise">Questions</h2>
-          <Spike size={160} className="faq-spike" />
+          <SpikeCharacter
+            size={160}
+            className="faq-spike"
+            mood={openQ ? 'look' : 'idle'}
+            gaze={faqGaze}
+            trigger={faqTrigger}
+            allowClickHop
+          />
         </div>
-        <Accordion type="single" collapsible defaultValue={FAQ[0][0]} className="qs rise" style={stagger(1)}>
+        <Accordion
+          type="single"
+          collapsible
+          value={openQ}
+          onValueChange={(next) => {
+            setOpenQ(next);
+            aimAt(next);
+            if (next) setFaqTrigger({ kind: 'nod', key: ++nodSeq.current });
+          }}
+          className="qs rise"
+          style={stagger(1)}
+        >
           {FAQ.map(([q, a]) => (
-            <AccordionItem className="faq-item border-0" key={q} value={q}>
+            <AccordionItem
+              ref={(el) => {
+                itemRefs.current.set(q, el);
+              }}
+              className="faq-item border-0"
+              key={q}
+              value={q}
+            >
               <AccordionTrigger className="faq-trigger [&>svg]:hidden hover:no-underline">
                 {q}
                 <span className="plus" aria-hidden="true" />

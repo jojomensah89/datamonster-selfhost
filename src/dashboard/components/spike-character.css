@@ -1,0 +1,491 @@
+/* Animated Spike mascot: transform and opacity only, paused off-screen and when hidden. */
+.spike-char {
+  display: inline-block;
+  flex-shrink: 0;
+  color: rgb(var(--c-accent));
+  overflow: visible;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.spike-char--interactive {
+  pointer-events: none;
+}
+
+.spike-char--interactive .spike-char__hit {
+  pointer-events: visiblePainted;
+  cursor: pointer;
+}
+
+.spike-char--passive {
+  pointer-events: none;
+}
+
+.spike-char__rig,
+.spike-char__lean,
+.spike-char__eyes,
+.spike-char__eye,
+.spike-char__mouth,
+.spike-char__foot,
+.spike-char__arm,
+.spike-char__prop {
+  transform-box: view-box;
+}
+
+.spike-char__rig {
+  transform-origin: 1032px 415.5px;
+}
+
+.spike-char__lean {
+  transform-origin: 1032px 415.5px;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.spike-char__gaze {
+  transform-box: view-box;
+  transform-origin: 1030px 358px;
+}
+
+.spike-char__eye {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.spike-char__mouth {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Pause every animation when off screen or in a background tab. */
+.spike-char[data-paused='true'] * {
+  animation-play-state: paused !important;
+}
+
+/* Subtle organic blink driven by JS timer so instances never synchronize. */
+@media (prefers-reduced-motion: no-preference) {
+  .spike-char[data-blinking='true']:not([data-reduced-motion='true']) .spike-char__eye--left {
+    animation: sc-blink 190ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .spike-char[data-blinking='true']:not([data-reduced-motion='true']) .spike-char__eye--right {
+    animation: sc-blink 190ms cubic-bezier(0.4, 0, 0.2, 1) 28ms;
+  }
+
+  /* Idle: gentle alive breathing, phase-shifted per instance. */
+  .spike-char[data-mood='idle']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-breathe 3.4s ease-in-out infinite;
+    animation-delay: var(--spike-phase, 0s);
+  }
+
+  /* Look: attentive breathing with slight alert lift. */
+  .spike-char[data-mood='look']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-look-body 3.2s ease-in-out infinite;
+    animation-delay: var(--spike-phase, 0s);
+  }
+
+  .spike-char[data-mood='look'][data-hungry='true']:not([data-reduced-motion='true']) .spike-char__mouth--chomp {
+    animation: sc-chomp 3.8s ease-in-out infinite;
+    animation-delay: var(--spike-phase, 0s);
+  }
+
+  /* Happy: joyful bouncy squash and stretch with warm sway. */
+  .spike-char[data-mood='happy']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-happy 920ms cubic-bezier(0.34, 1.35, 0.64, 1) infinite;
+  }
+
+  /* Celebrate: anticipation crouch, jump, stretch, wiggle, squash landing, settle. */
+  .spike-char[data-mood='celebrate']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-celebrate 1280ms cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+
+  .spike-char[data-mood='celebrate']:not([data-reduced-motion='true']) .spike-char__arm--left {
+    transform-origin: 966px 356px;
+    animation: sc-arm-left 640ms ease-in-out infinite;
+  }
+
+  .spike-char[data-mood='celebrate']:not([data-reduced-motion='true']) .spike-char__arm--right {
+    transform-origin: 1104px 350px;
+    animation: sc-arm-right 640ms ease-in-out infinite;
+  }
+
+  .spike-char[data-mood='celebrate']:not([data-reduced-motion='true']) .spike-char__spark {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: sc-spark 1280ms ease-out infinite;
+  }
+
+  .spike-char[data-mood='celebrate']:not([data-reduced-motion='true']) .spike-char__spark--2 {
+    animation-delay: 110ms;
+  }
+
+  .spike-char[data-mood='celebrate']:not([data-reduced-motion='true']) .spike-char__spark--3 {
+    animation-delay: 210ms;
+  }
+
+  /* Think: slow curious lean and rising mini chart bars. */
+  .spike-char[data-mood='think']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-think 2.4s ease-in-out infinite;
+  }
+
+  .spike-char[data-mood='think']:not([data-reduced-motion='true']) .spike-char__bar {
+    transform-origin: 1100px 308px;
+    animation: sc-bar 1.2s ease-in-out infinite;
+  }
+
+  .spike-char[data-mood='think']:not([data-reduced-motion='true']) .spike-char__bar--2 {
+    animation-delay: 180ms;
+  }
+
+  .spike-char[data-mood='think']:not([data-reduced-motion='true']) .spike-char__bar--3 {
+    animation-delay: 360ms;
+  }
+
+  /* Sad: slouched sighing breath and wistful slow look around. */
+  .spike-char[data-mood='sad']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-sad 3.8s ease-in-out infinite;
+    animation-delay: var(--spike-phase, 0s);
+  }
+
+  /* Sleep: slow deep breath and drifting zzz glyphs. */
+  .spike-char[data-mood='sleep']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-sleep 4s ease-in-out infinite;
+    animation-delay: var(--spike-phase, 0s);
+  }
+
+  .spike-char[data-mood='sleep']:not([data-reduced-motion='true']) .spike-char__z {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: sc-zzz 2.8s ease-out infinite;
+  }
+
+  .spike-char[data-mood='sleep']:not([data-reduced-motion='true']) .spike-char__z--2 {
+    animation-delay: 0.9s;
+  }
+
+  .spike-char[data-mood='sleep']:not([data-reduced-motion='true']) .spike-char__z--3 {
+    animation-delay: 1.8s;
+  }
+
+  /* Surprised: quick startled pop and alert ticks. */
+  .spike-char[data-mood='surprised']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-surprised 720ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .spike-char[data-mood='surprised']:not([data-reduced-motion='true']) .spike-char__tick {
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    animation: sc-tick 720ms ease-out both;
+  }
+
+  /* Greet: no arms, friendly tilt and double bob with accent arcs. */
+  .spike-char[data-mood='greet']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-greet 1100ms cubic-bezier(0.34, 1.35, 0.64, 1) infinite;
+  }
+
+  .spike-char[data-mood='greet']:not([data-reduced-motion='true']) .spike-char__wave-arc {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: sc-wave-arc 1100ms ease-in-out infinite;
+  }
+
+  .spike-char[data-mood='greet']:not([data-reduced-motion='true']) .spike-char__wave-arc--2 {
+    animation-delay: 90ms;
+  }
+
+  /* Hop: rhythmic travel bounce with tiny paddling feet. */
+  .spike-char[data-mood='hop']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-hop 540ms cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+
+  .spike-char[data-mood='hop']:not([data-reduced-motion='true']) .spike-char__foot--left {
+    transform-origin: 1002px 415px;
+    animation: sc-foot-left 540ms ease-in-out infinite;
+  }
+
+  .spike-char[data-mood='hop']:not([data-reduced-motion='true']) .spike-char__foot--right {
+    transform-origin: 1064px 415px;
+    animation: sc-foot-right 540ms ease-in-out infinite;
+  }
+
+  /* One-shot reactions override the resting rig motion briefly and settle cleanly. */
+  .spike-char[data-reaction='hop'][data-pulse='0']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-once-hop 660ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .spike-char[data-reaction='hop'][data-pulse='1']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-once-hop-alt 660ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .spike-char[data-reaction='nod'][data-pulse='0']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-once-nod 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .spike-char[data-reaction='nod'][data-pulse='1']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-once-nod-alt 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .spike-char[data-reaction='peek']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-once-peek 1550ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .spike-char[data-reaction='happy']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-happy 920ms cubic-bezier(0.34, 1.35, 0.64, 1) 1 both;
+  }
+
+  .spike-char[data-reaction='celebrate']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-celebrate 1280ms cubic-bezier(0.22, 1, 0.36, 1) 1 both;
+  }
+
+  .spike-char[data-reaction='greet']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-greet 900ms cubic-bezier(0.34, 1.35, 0.64, 1) 1 both;
+  }
+
+  .spike-char[data-reaction='surprised']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-surprised 720ms cubic-bezier(0.22, 1, 0.36, 1) 1 both;
+  }
+
+  .spike-char[data-reaction='think']:not([data-reduced-motion='true']) .spike-char__rig {
+    animation: sc-think 900ms ease-in-out 1 both;
+  }
+}
+
+/* Energy levels adjust hop height without touching layout. */
+.spike-char[data-energy='1'] {
+  --spike-jump: -11px;
+  --spike-tilt: 4deg;
+}
+
+.spike-char[data-energy='2'] {
+  --spike-jump: -17px;
+  --spike-tilt: 6.5deg;
+}
+
+.spike-char[data-energy='3'] {
+  --spike-jump: -23px;
+  --spike-tilt: 8.5deg;
+}
+
+/* Reduced motion: still Spike in the requested mood, zero animation or transitions. */
+.spike-char[data-reduced-motion='true'] *,
+.spike-char[data-reduced-motion='true'] {
+  animation: none !important;
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spike-char,
+  .spike-char * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Keyframes */
+@keyframes sc-blink {
+  0%, 100% { transform: scaleY(1); }
+  45%, 58% { transform: scaleY(0.08); }
+}
+
+@keyframes sc-breathe {
+  0%, 100% { transform: scale(1, 1); }
+  46% { transform: scale(1.024, 0.976); }
+  72% { transform: scale(0.99, 1.014); }
+}
+
+@keyframes sc-look-body {
+  0%, 100% { transform: scale(1, 1) rotate(0deg); }
+  30% { transform: scale(0.99, 1.015) rotate(-1.6deg); }
+  68% { transform: scale(1.02, 0.982) rotate(1.6deg); }
+}
+
+@keyframes sc-chomp {
+  0%, 58%, 100% { transform: scaleY(0.15); opacity: 0; }
+  64% { transform: scaleY(1.05); opacity: 1; }
+  71% { transform: scaleY(0.25); opacity: 0.9; }
+  78% { transform: scaleY(1); opacity: 1; }
+  85% { transform: scaleY(0.15); opacity: 0; }
+}
+
+@keyframes sc-happy {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg); }
+  16% { transform: translate3d(0, 2px, 0) scale(1.08, 0.91) rotate(-2deg); }
+  42% { transform: translate3d(0, calc(var(--spike-jump, -14px) * 0.65), 0) scale(0.94, 1.08) rotate(3deg); }
+  66% { transform: translate3d(0, 2px, 0) scale(1.06, 0.93) rotate(-1.5deg); }
+  82% { transform: translate3d(0, -3px, 0) scale(0.98, 1.03) rotate(1deg); }
+}
+
+@keyframes sc-celebrate {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg); }
+  14% { transform: translate3d(0, 4px, 0) scale(1.13, 0.86) rotate(-3deg); }
+  36% { transform: translate3d(0, var(--spike-jump, -21px), 0) scale(0.9, 1.12) rotate(5deg); }
+  50% { transform: translate3d(0, calc(var(--spike-jump, -21px) * 0.85), 0) scale(0.93, 1.08) rotate(-5deg); }
+  68% { transform: translate3d(0, 3px, 0) scale(1.11, 0.88) rotate(2deg); }
+  82% { transform: translate3d(0, -5px, 0) scale(0.97, 1.04) rotate(-1deg); }
+}
+
+@keyframes sc-arm-left {
+  0%, 100% { transform: rotate(0deg); }
+  45% { transform: rotate(-16deg) translateY(-3px); }
+}
+
+@keyframes sc-arm-right {
+  0%, 100% { transform: rotate(0deg); }
+  45% { transform: rotate(16deg) translateY(-3px); }
+}
+
+@keyframes sc-spark {
+  0%, 14% { opacity: 0; transform: scale(0.3) translateY(8px); }
+  38% { opacity: 1; transform: scale(1.08) translateY(-3px); }
+  68% { opacity: 0.9; transform: scale(0.92) translateY(-8px); }
+  100% { opacity: 0; transform: scale(0.4) translateY(-13px); }
+}
+
+@keyframes sc-think {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg); }
+  35% { transform: translate3d(0, -2px, 0) scale(0.985, 1.02) rotate(3.2deg); }
+  70% { transform: translate3d(0, 1px, 0) scale(1.02, 0.98) rotate(1.8deg); }
+}
+
+@keyframes sc-bar {
+  0%, 100% { transform: scaleY(0.55); opacity: 0.55; }
+  45% { transform: scaleY(1.05); opacity: 1; }
+}
+
+@keyframes sc-sad {
+  0%, 100% { transform: translate3d(0, 4px, 0) scale(1.04, 0.94) rotate(-1.8deg); }
+  50% { transform: translate3d(0, 7px, 0) scale(1.06, 0.91) rotate(1.4deg); }
+}
+
+@keyframes sc-sleep {
+  0%, 100% { transform: translate3d(0, 5px, 0) scale(1.05, 0.93) rotate(-1.5deg); }
+  52% { transform: translate3d(0, 8px, 0) scale(1.09, 0.89) rotate(-2.5deg); }
+}
+
+@keyframes sc-zzz {
+  0% { opacity: 0; transform: translate3d(-4px, 10px, 0) scale(0.75); }
+  25% { opacity: 0.95; transform: translate3d(0, 3px, 0) scale(1); }
+  75% { opacity: 0.7; transform: translate3d(6px, -8px, 0) scale(1.05); }
+  100% { opacity: 0; transform: translate3d(10px, -14px, 0) scale(0.9); }
+}
+
+@keyframes sc-surprised {
+  0% { transform: translate3d(0, 0, 0) scale(1, 1); }
+  18% { transform: translate3d(0, -14px, 0) scale(0.89, 1.14) rotate(-2deg); }
+  40% { transform: translate3d(0, -7px, 0) scale(0.95, 1.06) rotate(2deg); }
+  66% { transform: translate3d(0, 3px, 0) scale(1.07, 0.92) rotate(0deg); }
+  84% { transform: translate3d(0, -2px, 0) scale(0.98, 1.02); }
+  100% { transform: translate3d(0, 0, 0) scale(1, 1); }
+}
+
+@keyframes sc-tick {
+  0% { opacity: 0; transform: scaleY(0.2) translateY(6px); }
+  25% { opacity: 1; transform: scaleY(1.1) translateY(-2px); }
+  75% { opacity: 0.85; transform: scaleY(0.95) translateY(-4px); }
+  100% { opacity: 0; transform: scaleY(0.4) translateY(-6px); }
+}
+
+@keyframes sc-greet {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg); }
+  18% { transform: translate3d(0, 2px, 0) scale(1.05, 0.95) rotate(calc(var(--spike-tilt, 6.5deg) * -1)); }
+  38% { transform: translate3d(0, -7px, 0) scale(0.96, 1.05) rotate(var(--spike-tilt, 6.5deg)); }
+  54% { transform: translate3d(0, 1px, 0) scale(1.04, 0.96) rotate(calc(var(--spike-tilt, 6.5deg) * -0.55)); }
+  72% { transform: translate3d(0, -5px, 0) scale(0.97, 1.04) rotate(calc(var(--spike-tilt, 6.5deg) * 0.75)); }
+  88% { transform: translate3d(0, 1px, 0) scale(1.02, 0.98) rotate(0deg); }
+}
+
+@keyframes sc-wave-arc {
+  0%, 100% { opacity: 0.15; transform: scale(0.85) rotate(-4deg); }
+  38% { opacity: 0.95; transform: scale(1.06) rotate(4deg); }
+  72% { opacity: 0.85; transform: scale(1) rotate(0deg); }
+}
+
+@keyframes sc-hop {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg); }
+  18% { transform: translate3d(0, 3px, 0) scale(1.12, 0.87) rotate(-2deg); }
+  48% { transform: translate3d(0, -18px, 0) scale(0.91, 1.11) rotate(4deg); }
+  76% { transform: translate3d(0, 3px, 0) scale(1.09, 0.9) rotate(-1.5deg); }
+  90% { transform: translate3d(0, -2px, 0) scale(0.98, 1.02) rotate(0deg); }
+}
+
+@keyframes sc-foot-left {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  45% { transform: translate3d(-4px, -5px, 0) rotate(14deg); }
+  75% { transform: translate3d(2px, 1px, 0) rotate(-6deg); }
+}
+
+@keyframes sc-foot-right {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  45% { transform: translate3d(4px, 3px, 0) rotate(-14deg); }
+  75% { transform: translate3d(-2px, -3px, 0) rotate(6deg); }
+}
+
+@keyframes sc-once-hop {
+  0% { transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg); }
+  16% { transform: translate3d(0, 4px, 0) scale(1.13, 0.86) rotate(-2deg); }
+  44% { transform: translate3d(0, var(--spike-jump, -18px), 0) scale(0.9, 1.13) rotate(4deg); }
+  70% { transform: translate3d(0, 3px, 0) scale(1.09, 0.9) rotate(-1.5deg); }
+  86% { transform: translate3d(0, -3px, 0) scale(0.98, 1.03) rotate(0.5deg); }
+  100% { transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg); }
+}
+
+@keyframes sc-once-hop-alt {
+  0% { transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg); }
+  16% { transform: translate3d(0, 4px, 0) scale(1.13, 0.86) rotate(2deg); }
+  44% { transform: translate3d(0, var(--spike-jump, -18px), 0) scale(0.9, 1.13) rotate(-4deg); }
+  70% { transform: translate3d(0, 3px, 0) scale(1.09, 0.9) rotate(1.5deg); }
+  86% { transform: translate3d(0, -3px, 0) scale(0.98, 1.03) rotate(-0.5deg); }
+  100% { transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg); }
+}
+
+@keyframes sc-once-nod {
+  0% { transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg); }
+  26% { transform: translate3d(0, 5px, 0) scale(1.06, 0.93) rotate(5.5deg); }
+  58% { transform: translate3d(0, -4px, 0) scale(0.97, 1.04) rotate(-2deg); }
+  80% { transform: translate3d(0, 1px, 0) scale(1.02, 0.98) rotate(1deg); }
+  100% { transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg); }
+}
+
+@keyframes sc-once-nod-alt {
+  0% { transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg); }
+  26% { transform: translate3d(0, 5px, 0) scale(1.06, 0.93) rotate(5.5deg); }
+  58% { transform: translate3d(0, -4px, 0) scale(0.97, 1.04) rotate(-2deg); }
+  80% { transform: translate3d(0, 1px, 0) scale(1.02, 0.98) rotate(1deg); }
+  100% { transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg); }
+}
+
+@keyframes sc-once-peek {
+  0% { transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg); }
+  18% { transform: translate3d(0, 46px, 0) scale(1.08, 0.9) rotate(4deg); }
+  44% { transform: translate3d(0, 50px, 0) scale(1.06, 0.91) rotate(2deg); }
+  68% { transform: translate3d(0, -10px, 0) scale(0.93, 1.08) rotate(-3deg); }
+  84% { transform: translate3d(0, 3px, 0) scale(1.05, 0.95) rotate(1.5deg); }
+  100% { transform: translate3d(0, 0, 0) scale(1, 1) rotate(0deg); }
+}
+
+/* Header brand hover: small playful perk on the plain logo Spike. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .lp .brand .spike-icon {
+    transform-origin: center bottom;
+    transition: transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .lp .brand:hover .spike-icon {
+    transform: translateY(-2px) rotate(-7deg) scale(1.05, 0.97);
+  }
+}
+
+/* Footer Spike: hops across above the wordmark into its resting seat, then settles. */
+.lp .foot-spike-stage {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: flex-end;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp .foot-spike-stage {
+    transform: none !important;
+    animation: none !important;
+  }
+}

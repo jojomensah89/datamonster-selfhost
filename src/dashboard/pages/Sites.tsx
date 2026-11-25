@@ -2,7 +2,7 @@ import { Input } from '../components/primitives/input';
 import { Button } from '../components/primitives/button';
 import { useEffect, useState } from 'react';
 import { navigate, useMe } from '../App';
-import { Spike } from '../components/Spike';
+import { SpikeCharacter } from '../components/SpikeCharacter';
 import { Favicon } from '../components/Icons';
 import { Modal } from '../components/Modal';
 import { CurrencySelect, TimezoneSelect } from '../components/SiteFields';
@@ -32,6 +32,7 @@ function explain(message: string) {
 
 export function Sites() {
   const [adding, setAdding] = useState(false);
+  const [addHot, setAddHot] = useState(false);
   const [period, setPeriod] = usePref('dm_sites_period', '30d');
   const [reloadKey, setReloadKey] = useState(0);
   const { data: sites, loading: loadingSites, error } = useApi<Site[]>('/api/sites', reloadKey);
@@ -142,11 +143,28 @@ export function Sites() {
 
       {sites && !sites.length && (
         <div className="grid items-center gap-6 rounded-2xl border border-line px-6 py-6 sm:grid-cols-[200px_minmax(0,1fr)]">
-          <Spike size={200} className="h-32 w-32 sm:h-[200px] sm:w-[200px]" />
+          <SpikeCharacter
+            size={200}
+            className="h-32 w-32 sm:h-[200px] sm:w-[200px]"
+            mood={addHot ? 'happy' : 'look'}
+            hungry
+            trackPointer
+            allowClickHop
+          />
           <div>
             <h2 className="text-xl font-semibold tracking-[-0.01em]">Nothing to chew on yet</h2>
             <p className="mt-1.5 max-w-[60ch] text-muted">Add your website and paste one line in its head. The first visit shows up here within a few seconds, and payments follow once you connect your payment provider.</p>
-            <Button variant="raw" size="raw" type="button" className="btn-dark mt-4" onClick={() => setAdding(true)}>
+            <Button
+              variant="raw"
+              size="raw"
+              type="button"
+              className="btn-dark mt-4"
+              onClick={() => setAdding(true)}
+              onPointerEnter={(e) => e.pointerType === 'mouse' && setAddHot(true)}
+              onPointerLeave={() => setAddHot(false)}
+              onFocus={() => setAddHot(true)}
+              onBlur={() => setAddHot(false)}
+            >
               <Icon name="plus" size={14} />
               Add your first website
             </Button>

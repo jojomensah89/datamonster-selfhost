@@ -1,4 +1,4 @@
-import { Suspense, createContext, lazy, useCallback, useContext, useEffect, useState } from 'react';
+import { Suspense, createContext, lazy, useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
 import { AppShell } from './components/AppShell';
 import { NotFound } from './components/NotFound';
 import { api, type Me } from './lib/api';
@@ -134,6 +134,11 @@ export function App() {
   useEffect(() => {
     if (me) syncTheme(rootIsLanding);
   }, [me, rootIsLanding]);
+
+  // index.html's loading logo stays up until the first page is ready to draw.
+  useLayoutEffect(() => {
+    if (me) document.getElementById('splash')?.remove();
+  }, [me]);
 
   if (!me) return null;
 

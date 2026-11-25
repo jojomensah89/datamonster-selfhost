@@ -27,6 +27,14 @@ describe('link previews', () => {
     }
   });
 
+  it('come with plain text that says what the landing page says', () => {
+    const landing = readFileSync(new URL('../src/dashboard/pages/Landing.tsx', import.meta.url), 'utf8');
+    const words = (s: string | undefined) => s?.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    const plain = /<main id="plain"[\s\S]*?<\/main>/.exec(page)![0];
+    expect(words(/<h1>([\s\S]*?)<\/h1>/.exec(plain)?.[1])).toBe(words(/<h1>([\s\S]*?)<\/h1>/.exec(landing)?.[1]));
+    expect(words(/<p>([\s\S]*?)<\/p>/.exec(plain)?.[1])).toBe(words(/className="hero-sub[^>]*>([\s\S]*?)<\/p>/.exec(landing)?.[1]));
+  });
+
   it('get the home page through the Worker', () => {
     expect(readFileSync(new URL('../wrangler.jsonc', import.meta.url), 'utf8')).toMatch(/"run_worker_first": \["\/",/);
   });

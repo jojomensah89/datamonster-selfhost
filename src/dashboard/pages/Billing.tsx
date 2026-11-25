@@ -1,10 +1,10 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useMe } from '../App';
 import { Hint } from '../components/CopyIcon';
 import { Favicon } from '../components/Icons';
 import { Modal } from '../components/Modal';
 import { Button } from '../components/primitives/button';
-import { Spike } from '../components/Spike';
+import { SpikeCharacter, type SpikeTrigger } from '../components/SpikeCharacter';
 import { BlockError, Icon, TitleRow } from '../components/ui';
 import { api, type BillingAccount, type BillingUsage, type Me } from '../lib/api';
 import { fmtMoney } from '../lib/format';
@@ -36,6 +36,7 @@ export function Billing() {
   const { data: account, error: accountError } = useApi<BillingAccount>(user.admin ? null : '/api/billing/account', reload);
   const query = new URLSearchParams(window.location.search);
   const [waiting, setWaiting] = useState(query.get('paid') === '1' && !user.paid);
+  const [justPro, setJustPro] = useState(query.get('paid') === '1' && user.paid);
   const [late, setLate] = useState(false);
   const [problem, setProblem] = useState(ERRORS[query.get('error') ?? ''] ?? '');
   const support = plan?.supportEmail ?? me.supportEmail ?? null;
@@ -50,6 +51,7 @@ export function Billing() {
       if (m.user?.paid || tries > 40) {
         clearInterval(t);
         setWaiting(false);
+        if (m.user?.paid) setJustPro(true);
         setLate(!m.user?.paid);
         setReload((k) => k + 1);
       }
@@ -91,7 +93,7 @@ export function Billing() {
           {usage ? <Month usage={usage} user={user} /> : usageError ? <BlockError what="Couldn't load this month." onRetry={() => setReload((k) => k + 1)} /> : <div className="skeleton h-[420px]" aria-busy="true" aria-label="Loading usage" />}
         </section>
         <div className="contents lg:grid lg:content-start lg:gap-4">
-          <PlanCard user={user} price={plan?.price} limits={plan} canBuy={!!plan?.checkout && !waiting} onChanged={changed} onProblem={setProblem} />
+          <PlanCard user={user} price={plan?.price} limits={plan} canBuy={!!plan?.checkout && !waiting} celebrateOnce={justPro} onChanged={changed} onProblem={setProblem} />
           {accountError ? (
             <div className="max-lg:order-2">
               <BlockError what="Couldn't load your payments." onRetry={() => setReload((k) => k + 1)} />
@@ -328,6 +330,7 @@ function PlanCard({
   price,
   limits,
   canBuy,
+  celebrateOnce,
   onChanged,
   onProblem,
 }: {
@@ -335,10 +338,19 @@ function PlanCard({
   price?: string;
   limits: { eventLimit?: number; siteLimit?: number; checkout: boolean; supportEmail: string | null } | null;
   canBuy: boolean;
+  celebrateOnce: boolean;
   onChanged: () => Promise<void>;
   onProblem: (s: string) => void;
 }) {
   const [asking, setAsking] = useState(false);
+  const [planTrigger, setPlanTrigger] = useState<SpikeTrigger | null>(null);
+  const celebratedRef = useRef(false);
+  useEffect(() => {
+    if (celebrateOnce && !celebratedRef.current) {
+      celebratedRef.current = true;
+      setPlanTrigger({ kind: 'celebrate', key: 1 });
+    }
+  }, [celebrateOnce]);
   const { busy, set } = useRenewal(onChanged, onProblem);
   const free = !user.paid;
   const name = user.admin ? 'Owner' : free ? 'Free' : 'Pro';
@@ -375,7 +387,7 @@ function PlanCard({
           </p>
         </div>
         <span className="shrink-0 text-accent">
-          <Spike size={64} />
+          <SpikeCharacter size={64} mood="idle" energy={2} trigger={planTrigger} allowClickHop />
         </span>
       </div>
       {free && !fixable(user) && !user.renewing && limits && (

@@ -141,7 +141,7 @@
 .lp .glyphs { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; display: block; }
 /* An empty box the glyph field reads to place the world map; each breakpoint moves it. */
 .lp .plate-map { position: absolute; z-index: -2; right: -2%; top: 0; width: 60%; height: 62%; pointer-events: none; }
-.lp .hero-copy { align-self: end; }
+.lp .hero-copy { position: relative; z-index: 2; align-self: end; }
 .lp .hero h1 { font-size: clamp(4rem, 7.9vw - 0.6rem, 6.5rem); line-height: 0.98; }
 .lp .hero h1 .nowrap { display: block; white-space: nowrap; }
 .lp .hero-sub { margin-top: 36px; max-width: 40ch; font-size: var(--step-lead); line-height: 1.35; color: #fff; }
@@ -150,7 +150,7 @@
 
 /* Spike peeks over the example card, cut out of navy against the cobalt; its eyes are holes. */
 .lp .hero-card { position: relative; align-self: end; }
-.lp .hero-spike { position: absolute; z-index: 0; right: 9%; top: 0; width: clamp(120px, 13vw, 210px); height: auto; transform: translateY(-64%) rotate(-6deg); color: var(--ink); }
+.lp .hero-spike { position: absolute; z-index: 0; right: 9%; top: 0; width: clamp(120px, 13vw, 210px); height: auto; transform: translateY(-78%) rotate(-6deg); color: var(--ink); }
 .lp .in .hero-spike, .lp .plate.in .hero-spike { animation: lp-peek 900ms var(--ease) 500ms both; }
 @keyframes lp-peek { from { transform: translateY(-20%) rotate(0deg); } }
 
@@ -225,7 +225,7 @@
 @media (hover: hover) and (pointer: fine) { .lp .ask-q:hover { background: rgba(255, 255, 255, 0.08); color: #fff; } }
 .lp .ask-q[aria-selected='true'] { background: #fff; color: var(--ink); font-weight: 600; }
 .lp .ask-window { position: relative; padding-top: 120px; }
-.lp .ask-spike { position: absolute; z-index: 0; right: 10%; top: 0; width: clamp(110px, 12vw, 180px); height: auto; color: var(--sky); transform: translateY(12%) rotate(7deg); }
+.lp .ask-spike { position: absolute; z-index: 0; right: 10%; top: 120px; width: clamp(110px, 12vw, 180px); height: auto; color: var(--sky); transform: translateY(-80%) rotate(7deg); }
 .lp .chat-card { position: relative; z-index: 1; background: #fff; color: var(--ink); border-radius: 20px; padding: 20px; min-height: 280px; display: flex; flex-direction: column; }
 .lp .chat-bar { display: flex; align-items: center; gap: 8px; padding: 2px 4px 16px; font-size: var(--fs-small); font-weight: 500; color: var(--muted); }
 .lp .chat-dot { width: 8px; height: 8px; border-radius: 50%; background: #12b76a; }
@@ -326,7 +326,7 @@
 @media (hover: hover) and (pointer: fine) { .lp .foot-cols a:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; } }
 .lp .foot-mark { display: flex; align-items: flex-end; gap: clamp(10px, 1.4vw, 20px); margin-top: clamp(56px, 7vw, 112px); }
 .lp .foot-spike { flex: none; width: clamp(48px, 9vw, 150px); height: auto; color: #fff; margin-bottom: 0.6%; }
-.lp .foot-word { font-size: clamp(3rem, 12.4vw, 13rem); font-weight: 600; letter-spacing: -0.05em; line-height: 0.9; white-space: nowrap; }
+.lp .foot-word { font-size: clamp(3rem, 12.4vw, 11.5rem); font-weight: 600; letter-spacing: -0.05em; line-height: 0.9; white-space: nowrap; }
 .lp .foot-last { margin-top: 32px; font-size: var(--fs-small); color: #e4ebff; }
 
 /* ---------- entrances */
@@ -393,7 +393,7 @@
   .lp .marquee { font-size: 2.5rem; }
   .lp .ask-q { padding: 12px 14px; }
   .lp .ask-window { padding-top: 88px; }
-  .lp .ask-spike { width: 104px; right: 8%; }
+  .lp .ask-spike { width: 104px; right: 8%; top: 88px; }
   .lp .chat-card { min-height: 0; padding: 14px; }
   .lp .bubble { max-width: 94%; }
   .lp .feat-head { grid-template-columns: 1fr; gap: 16px; }
