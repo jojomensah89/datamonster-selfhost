@@ -55,7 +55,7 @@ export function Legal({ page }: { page: Page }) {
               <p>You sign in with Google and are responsible for activity under your account, including what agents you connect do with the access you grant them. One account per person or business.</p>
               <h2>Payment</h2>
               <p>
-                The Free plan costs nothing and has the limits shown on the pricing page; when a month's events are used up, recording pauses until the next month. Pro is billed monthly through Polar, our merchant of record, at the price shown at checkout. It renews automatically until cancelled;
+                The Free plan costs nothing and has the limits shown on the pricing page; when a month's events are used up, recording pauses until the next month. Pro is billed monthly through Polar, our merchant of record, at the price shown at checkout. Pro includes the monthly events shown on the pricing page plus a temporary traffic-spike buffer (up to 3× your included events) before recording pauses until the next month. It renews automatically until cancelled;
                 cancelling stops future charges and keeps Pro until the end of the paid month. After that your account moves to Free: your data stays, and if you have more websites
                 than Free records, the busiest one carries on and the others are paused.
               </p>
@@ -90,7 +90,8 @@ export function Legal({ page }: { page: Page }) {
               <p>
                 For websites you track, the script records pages viewed, referrers, campaign tags, button clicks you choose to track, approximate location (country, region,
                 city, coordinates rounded to about 1 km), browser, operating system and device. It uses two first-party cookies (a random visitor id and a session id) and
-                does not store IP addresses. Email addresses in page URLs are removed before sending. You decide whether to link visitors to customers (for example with
+                does not store raw IP addresses—to prevent abuse, we keep only a keyed daily hash of the sending address per account, which cannot be reversed and is deleted
+                automatically after the day ends. Email addresses in page URLs are removed before sending. You decide whether to link visitors to customers (for example with
                 payment metadata or identify()).
               </p>
               <p>
@@ -102,7 +103,8 @@ export function Legal({ page }: { page: Page }) {
               <h2>How long it's kept</h2>
               <p>
                 There is no automatic expiry. A website's visits, sessions, payments, goals, funnels, tracked links, notes and launches are kept until you
-                delete that website. Deleting it, from its settings, removes all of that data at once and can't be undone.
+                delete that website. Deleting it, from its settings, removes all of that visitor and site data at once and can't be undone; only aggregate daily and monthly
+                event counts remain for your account's billing meter (with no visitor or page data).
               </p>
               <h2>Contact</h2>
               <p>Privacy questions or deletion requests: {contact}.</p>

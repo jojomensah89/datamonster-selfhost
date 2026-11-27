@@ -9,6 +9,8 @@ Agents are first-class users next to the dashboard. An agent can ask DataMonster
 server, a REST API and agent skills. Every agent call is in an audit log, and agents can never read secrets or
 delete data.
 
+**Don't want to self-host?** Use the hosted version at **[datamonster.dev](https://datamonster.dev)** — free for 1 website and 5,000 events/month (no card needed), or Pro ($5/month) for up to 10 websites and 50,000 events/month.
+
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/jojomensah89/datamonster-selfhost)
 
 ![Dashboard](docs/dashboard.png)
@@ -30,6 +32,10 @@ delete data.
 The software you deploy here is the whole product.
 
 ## Quick start
+
+### Hosted (no setup)
+
+Sign in with Google at **[datamonster.dev](https://datamonster.dev)** — free up to 5,000 events/month on 1 website, or Pro ($5/month) for up to 10 websites and 50,000 events/month.
 
 ### One-click Deploy to Cloudflare
 
